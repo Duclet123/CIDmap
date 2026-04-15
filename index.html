@@ -3,126 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RP Map - Navigation Version</title>
+    <title>Elite RP Map - Split Screen</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; background-color: #121212; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        #gta-map { width: 100vw; height: 100vh; }
-        
-        #sidebar {
-            position: absolute; top: 20px; left: 20px;
-            background-color: rgba(15, 15, 15, 0.9); border: 1px solid #333;
-            border-radius: 10px; padding: 20px; color: #fff; z-index: 1000;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-            width: 260px; max-height: 85vh; overflow-y: auto; 
-        }
-
-        .sidebar-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #4facfe; }
-        .sidebar-section { margin-bottom: 25px; } 
-        .sidebar-section h3 { margin: 0 0 10px 0; color: #aaa; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* Στυλ για τη λίστα πλοήγησης */
-        .nav-list { list-style: none; padding: 0; margin: 10px 0 0 0; border-left: 1px solid #333; margin-left: 5px; }
-        .nav-item { 
-            padding: 5px 15px; font-size: 13px; color: #888; cursor: pointer; transition: 0.2s;
-        }
-        .nav-item:hover { color: #4facfe; background: rgba(79, 172, 254, 0.1); border-radius: 4px; }
-
-        .filter-label { display: flex; align-items: center; margin-bottom: 5px; cursor: pointer; font-size: 14px; color: #ddd; font-weight: bold; }
-        .filter-label input { margin-right: 12px; }
-
-        #coords-box {
-            position: absolute; bottom: 20px; left: 20px;
-            background-color: rgba(15, 15, 15, 0.9); border: 1px solid #4facfe;
-            border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; z-index: 1000;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="sidebar">
-        <div class="sidebar-header">
-            <h2>🌐 MAP</h2>
-        </div>
-
-        <div class="sidebar-section">
-            <h3 style="color: #ff4b4b;">💀 Criminal Organizations</h3>
-            <label class="filter-label"><input type="checkbox" id="check-gang" checked> 🏴 Show Gangs</label>
-            <div class="nav-list">
-                <div class="nav-item" onclick="goToLoc(497, -2056)">📍 Ballas HQ</div>
-                <div class="nav-item" onclick="goToLoc(416, -1736)">📍 Families HQ</div>
-                <div class="nav-item" onclick="goToLoc(635, -2120)">📍 Vagos HQ</div>
+    <div class="main-container">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h2>🌐 INFINITY</h2>
+                <button id="close-sidebar" onclick="toggleSidebar()">❮</button>
             </div>
-        </div>
 
-        <div class="sidebar-section">
-            <h3>🏛️ Public Services</h3>
-            <label class="filter-label"><input type="checkbox" id="check-police" checked> 🚓 Show Services</label>
-            <div class="nav-list">
-                <div class="nav-item" onclick="goToLoc(705, -1419)">🏥 Mission Row PD</div>
-                <div class="nav-item" onclick="goToLoc(1125, -1772)">🏥 Pillbox Hospital</div>
+            <div class="menu-category">
+                <div class="category-header" onclick="toggleMenu('criminal-menu')">
+                    <div class="header-title">
+                        <label class="switch">
+                            <input type="checkbox" id="check-gang" checked onclick="event.stopPropagation(); toggleLayer('check-gang', gangGroup)">
+                            <span class="slider"></span>
+                        </label>
+                        CRIMINAL GROUPS
+                    </div>
+                    <span class="count-badge">3</span>
+                </div>
+                <div id="criminal-menu" class="category-content active">
+                    <div class="nav-item" onclick="goToLoc(497, -2056)"><span class="dot dot-purple"></span> Ballas</div>
+                    <div class="nav-item" onclick="onclick="goToLoc(416, -1736)"><span class="dot dot-green"></span> Families</div>
+                    <div class="nav-item" onclick="goToLoc(635, -2120)"><span class="dot dot-orange"></span> Vagos</div>
+                </div>
             </div>
-        </div>
 
-        <div class="sidebar-section">
-            <h3 style="color: #4facfe;">🎯 Assets</h3>
-            <label class="filter-label"><input type="checkbox" id="check-assets" checked> 🔑 Show Assets</label>
-            <div class="nav-list">
-                <div class="nav-item" onclick="goToLoc(-75, -825)">💎 Jewelry Store</div>
-                <div class="nav-item" onclick="goToLoc(150, -1040)">🏦 Central Bank</div>
+            <div class="menu-category">
+                <div class="category-header" onclick="toggleMenu('service-menu')">
+                    <div class="header-title">
+                        <label class="switch">
+                            <input type="checkbox" id="check-police" checked onclick="event.stopPropagation(); toggleLayer('check-police', policeGroup)">
+                            <span class="slider"></span>
+                        </label>
+                        PUBLIC SERVICES
+                    </div>
+                    <span class="count-badge">2</span>
+                </div>
+                <div id="service-menu" class="category-content">
+                    <div class="nav-item" onclick="goToLoc(705, -1419)"><span class="dot dot-blue"></span> Mission Row PD</div>
+                    <div class="nav-item" onclick="goToLoc(1125, -1772)"><span class="dot dot-blue"></span> Pillbox EMS</div>
+                </div>
             </div>
-        </div>
+            
+            <div id="sidebar-coords">
+                📍 X: <span id="coord-x">0</span> | Y: <span id="coord-y">0</span>
+            </div>
+        </div> <button id="open-sidebar" onclick="toggleSidebar()">❯</button>
+
+        <div id="gta-map"></div>
     </div>
-
-    <div id="coords-box">📍 <span id="location-name">X: 0 | Y: 0</span></div>
-    <div id="gta-map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script>
-        var map = L.map('gta-map', { crs: L.CRS.Simple, minZoom: -1.5, maxZoom: 2, zoomControl: false });
-        var bounds = [[-3500, -3000], [5000, 4500]];
-        
-        // Φόρτωση χάρτη (Βεβαιώσου ότι το όνομα είναι σωστό στο GitHub)
-        L.imageOverlay('icons/map.jpg', bounds).addTo(map); 
-        map.fitBounds(bounds);
-
-        var policeGroup = L.layerGroup().addTo(map);
-        var gangGroup = L.layerGroup().addTo(map);
-        var assetsGroup = L.layerGroup().addTo(map);
-
-        function gtaToMap(x, y) { return [y, x]; }
-
-        // Λειτουργία Πλοήγησης
-        function goToLoc(x, y) {
-            map.flyTo(gtaToMap(x, y), 1, { duration: 1.5 });
-        }
-
-        // Gang Zones
-        function addGangZone(x, y, radius, color, name) {
-            L.circle(gtaToMap(x, y), { color: color, fillColor: color, fillOpacity: 0.3, radius: radius }).addTo(gangGroup);
-            L.circleMarker(gtaToMap(x, y), { radius: 5, color: '#fff', fillColor: color, fillOpacity: 1 }).addTo(gangGroup);
-        }
-
-        addGangZone(497, -2056, 60, "#800080", "Ballas");
-        addGangZone(416, -1736, 60, "#008000", "Families");
-        addGangZone(635, -2120, 60, "#ffcc00", "Vagos");
-
-        // Markers (Assets & PD)
-        L.marker(gtaToMap(-75, -825)).bindPopup("Jewelry Store").addTo(assetsGroup);
-        L.marker(gtaToMap(150, -1040)).bindPopup("Central Bank").addTo(assetsGroup);
-
-        // Toggle Layers
-        document.getElementById('check-gang').onclick = function() { this.checked ? map.addLayer(gangGroup) : map.removeLayer(gangGroup); };
-        document.getElementById('check-police').onclick = function() { this.checked ? map.addLayer(policeGroup) : map.removeLayer(policeGroup); };
-        document.getElementById('check-assets').onclick = function() { this.checked ? map.addLayer(assetsGroup) : map.removeLayer(assetsGroup); };
-
-        // Coords Tracker
-        map.on('mousemove', function(e) {
-            document.getElementById('location-name').innerText = "X: " + e.latlng.lng.toFixed(0) + " | Y: " + e.latlng.lat.toFixed(0);
-        });
-    </script>
+	<script src="script.js"></script>
 </body>
 </html>

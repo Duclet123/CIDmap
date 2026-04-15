@@ -1,0 +1,65 @@
+// Περιμένουμε να φορτώσει όλη η σελίδα πριν ξεκινήσουμε
+window.onload = function() {
+
+    // 1. Ρύθμιση Χάρτη
+    var map = L.map('gta-map', { 
+        crs: L.CRS.Simple, 
+        minZoom: -1.5, 
+        maxZoom: 2, 
+        zoomControl: false 
+    });
+
+    var bounds = [[-3500, -3000], [5000, 4500]];
+    L.imageOverlay('icons/map.jpg', bounds).addTo(map); 
+    map.fitBounds(bounds);
+
+    // 2. Groups
+    var policeGroup = L.layerGroup().addTo(map);
+    var gangGroup = L.layerGroup().addTo(map);
+
+    // 3. Icons
+    var policeIcon = L.icon({ iconUrl: 'icons/police.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
+    var hospitalIcon = L.icon({ iconUrl: 'icons/hospital.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
+
+    // 4. Global Functions (τις βάζουμε στο window για να τις βρίσκει το HTML)
+    window.gtaToMap = function(x, y) { return [y, x]; };
+
+    window.toggleMenu = function(id) {
+        document.getElementById(id).classList.toggle('active');
+    };
+
+    window.toggleSidebar = function() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('hidden');
+        setTimeout(() => { map.invalidateSize(); }, 400);
+    };
+
+    window.goToLoc = function(x, y) {
+        map.flyTo(window.gtaToMap(x, y), 1, { duration: 1.5 });
+    };
+
+    window.toggleLayer = function(checkboxId, layerGroup) {
+        var cb = document.getElementById(checkboxId);
+        if(cb.checked) { map.addLayer(layerGroup); } 
+        else { map.removeLayer(layerGroup); }
+    };
+
+    window.addGangZone = function(x, y, radius, color, name, desc) {
+        L.circle(window.gtaToMap(x, y), { color: color, fillColor: color, fillOpacity: 0.2, radius: radius }).addTo(gangGroup);
+        L.circleMarker(window.gtaToMap(x, y), { radius: 4, color: '#fff', fillColor: color, fillOpacity: 1 }).bindPopup(`<b>${name}</b><br>${desc}`).addTo(gangGroup);
+    };
+
+    // 5. Αρχικά Δεδομένα
+    window.addGangZone(497, -2056, 100, "#a370ff", "Ballas", "Grove St."); 
+    window.addGangZone(416, -1736, 100, "#70ff70", "Families", "Forum Dr.");
+    window.addGangZone(635, -2120, 100, "#ff8c00", "Vagos", "Rancho.");
+
+    L.marker(window.gtaToMap(705.5, -1419.5), {icon: policeIcon}).bindPopup('Mission Row PD').addTo(policeGroup);
+    L.marker(window.gtaToMap(1125, -1772), {icon: hospitalIcon}).bindPopup('Pillbox Hospital').addTo(policeGroup);
+
+    // 6. Events
+    map.on('mousemove', function(e) {
+        document.getElementById('coord-x').innerText = e.latlng.lng.toFixed(0);
+        document.getElementById('coord-y').innerText = e.latlng.lat.toFixed(0);
+    });
+};
