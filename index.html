@@ -18,7 +18,12 @@
         }
 
         #sidebar.hidden { margin-left: -300px; }
-        #gta-map { flex-grow: 1; height: 100%; background: #0c0c0c; }
+        #gta-map { flex-grow: 1; height: 100%; background: #0c0c0c; z-index: 1; }
+
+        .leaflet-image-layer {
+            object-fit: contain !important;
+            image-rendering: -webkit-optimize-contrast;
+        }
 
         .sidebar-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #a1035a; }
         .sidebar-header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; }
@@ -35,7 +40,7 @@
         #sidebar.hidden ~ #open-sidebar { display: block !important; }
 
         .category-header { background: #161616; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
-        .header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 13px; color: #d1d1d1; pointer-events: auto; }
+        .header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 13px; color: #d1d1d1; }
 
         .switch { position: relative; display: inline-block; width: 34px; height: 18px; margin-right: 5px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -141,10 +146,17 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         var map, policeGroup, gangGroup, assetGroup, jobGroup;
+        var bounds = [[-3500, -3000], [5000, 4500]];
 
         window.onload = function() {
-            map = L.map('gta-map', { crs: L.CRS.Simple, minZoom: -1.5, maxZoom: 2, zoomControl: false });
-            var bounds = [[-3500, -3000], [5000, 4500]];
+            map = L.map('gta-map', { 
+                crs: L.CRS.Simple, 
+                minZoom: -2.5, 
+                maxZoom: 2, 
+                zoomSnap: 0.1,
+                zoomControl: false 
+            });
+            
             L.imageOverlay('icons/map.jpg', bounds).addTo(map); 
             map.fitBounds(bounds);
 
@@ -158,32 +170,31 @@
 
             const mapData = {
                 gangs: [
-                    { x: 1259.50, y: -1130.25, name: "RTM", color: "#0F8ABD", desc: "Mirror Park", radius: 100 },
-                    { x: -352.50, y: -530.50, name: "Team Locos", color: "#ffffff", desc: "Richman Hotel", radius: 100 },
-                    { x: 640.25, y: -1593.00, name: "MOB", color: "#4002AD", desc: "...", radius: 100 },
-                    { x: 955.00, y: -2350.50, name: "Ultimate Outlaws", color: "#EDFF00", desc: "...", radius: 100 },
-                    { x: -100.50, y: -1614.25, name: "VTS", color: "#696969", desc: "...", radius: 100 },
-                    { x: 1015.75, y: -876.00, name: "WSR", color: "#FF7AED", desc: "...", radius: 100 },
+                    { x: 1265.72, y: -909.34, name: "RTM", color: "#0F8ABD", desc: "Mirror Park", radius: 100 },
+                    { x: -353.16, y: -395.60, name: "Team Locos", color: "#ffffff", desc: "Richman Hotel", radius: 100 },
+                    { x: 642.75, y: -1320.00, name: "MOB", color: "#4002AD", desc: "...", radius: 100 },
+                    { x: 962.52, y: -1975.40, name: "Ultimate Outlaws", color: "#EDFF00", desc: "...", radius: 100 },
+                    { x: -94.22, y: -1332.91, name: "VTS", color: "#696969", desc: "...", radius: 100 },
+                    { x: 1017.17, y: -683.77, name: "WSR", color: "#FF7AED", desc: "...", radius: 100 },
                 ],
                 services: [
-                    { x: 938.00, y: -1625.5, name: "La Mesa PD", icon: policeIcon, color: "#4facfe" },
-                    { x: 1125, y: -1772, name: "EMS", icon: hospitalIcon, color: "#ff4b4b" }
+                    { x: 937.27, y: -1345.27, name: "La Mesa PD", icon: policeIcon, color: "#4facfe" },
+                    { x: 1136.32, y: -1460.88, name: "EMS", icon: hospitalIcon, color: "#ff4b4b" }
                 ],
                 jobs: [
-                    { x: -550, y: -190, name: "Taxi Driver", color: "#ffcc00" },
                     { x: 450, y: -600, name: "Mechanic", color: "#aaaaaa" }
                 ],
                 assets: [
-                    { x: 876.00, y: -1679.00, name: "Low Pistols Craft", color: "#ffffff" },
-                    { x: 2152.75, y: 2303.75, name: "Medium Pistol Craft", color: "#ffffff" },
-                    { x: 470.00, y: 3740.50, name: "High Pistols Craft", color: "#ffffff" },
-                    { x: 1355.75, y: 3594.75, name: "Boosting", color: "#ffffff" },
-                    { x: 2004.75, y: 1155.00, name: "High SMG Craft", color: "#ffffff" },
-                    { x: 415.50, y: -2475.50, name: "Low SMG Craft", color: "#ffffff" },
-                    { x: -601.00, y: -2736.50, name: "House Robberies", color: "#ffffff" },
-                    { x: 737.50, y: -2217.00, name: "Weed Run", color: "#ffffff" },
-                    { x: 97.50, y: -1877.25, name: "Chop", color: "#ffffff" },
-                    { x: 529.75, y: -1558.50, name: "Roof Robberies", color: "#ffffff" },
+                    { x: 469.87, y: 3383.51, name: "High Pistols Craft", color: "#ffffff" },
+                    { x: 2150.36, y: 2125.67, name: "Medium Pistol Craft", color: "#ffffff" },
+                    { x: 880.44, y: -1382.84, name: "Low Pistols Craft", color: "#ffffff" },
+                    { x: 1357.00, y: 3259.50, name: "Boosting", color: "#ffffff" },
+                    { x: 2004.00, y: 1125.00, name: "High SMG Craft", color: "#ffffff" },
+                    { x: 416.82, y: -2098.13, name: "Low SMG Craft", color: "#ffffff" },
+                    { x: -622.75, y: -2320.00, name: "House Robberies", color: "#ffffff" },
+                    { x: 727.13, y: -1878.70, name: "Weed Run", color: "#ffffff" },
+                    { x: 95.50, y: -1565.00, name: "Chop", color: "#ffffff" },
+                    { x: 523.84, y: -1286.52, name: "Roof Robberies", color: "#ffffff" },
                 ]
             };
 
@@ -221,7 +232,7 @@
                     <div class="admin-popup">
                         <strong style="color:#a1035a; font-size:16px;">🛠️ ADMIN PANEL</strong><br>
                         <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">COORDS:</div>
-                        <div class="admin-code">${x}, ${y}</div>
+                        <div class="admin-code">x: ${x}, y: ${y}</div>
                         <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">GANG OBJECT:</div>
                         <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", color: "#ffffff", desc: "...", radius: 100 },</div>
                         <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">JOB/SERVICE/ASSET:</div>
@@ -233,27 +244,24 @@
 
         function gtaToMap(x, y) { return [y, x]; }
         
-        // Νέα συνάρτηση που ελέγχει αν το κλικ έγινε στο switch ή στο header
         function handleCategoryClick(event, menuId) {
-            // Αν το κλικ έγινε σε input ή slider, μην κάνεις toggle το μενού
-            if (event.target.tagName === 'INPUT' || event.target.classList.contains('slider')) {
-                return;
-            }
+            if (event.target.tagName === 'INPUT' || event.target.classList.contains('slider')) return;
             toggleMenu(menuId);
         }
 
-        function toggleMenu(id) { 
-            document.getElementById(id).classList.toggle('active'); 
-        }
+        function toggleMenu(id) { document.getElementById(id).classList.toggle('active'); }
         
         function toggleSidebar() { 
             document.getElementById('sidebar').classList.toggle('hidden'); 
-            setTimeout(() => { if(map) map.invalidateSize(); }, 400); 
+            setTimeout(() => { 
+                if(map) {
+                    map.invalidateSize(); 
+                    map.fitBounds(bounds);
+                }
+            }, 400); 
         }
         
-        function goToLoc(x, y) { 
-            if(map) map.flyTo(gtaToMap(x, y), 1); 
-        }
+        function goToLoc(x, y) { if(map) map.flyTo(gtaToMap(x, y), 1); }
 
         function toggleLayer(checkboxId, type) {
             let group;
@@ -261,12 +269,8 @@
             else if(type === 'police') group = policeGroup;
             else if(type === 'job') group = jobGroup;
             else if(type === 'asset') group = assetGroup;
-
-            if (document.getElementById(checkboxId).checked) {
-                map.addLayer(group);
-            } else {
-                map.removeLayer(group);
-            }
+            if (document.getElementById(checkboxId).checked) map.addLayer(group);
+            else map.removeLayer(group);
         }
 
         function addNavItem(menuId, data) {
