@@ -40,7 +40,7 @@
         #sidebar.hidden ~ #open-sidebar { display: block !important; }
 
         .category-header { background: #161616; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
-        .header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 13px; color: #d1d1d1; }
+        .header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 13px; color: #d1d1d1; pointer-events: auto; }
 
         .switch { position: relative; display: inline-block; width: 34px; height: 18px; margin-right: 5px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -167,6 +167,10 @@
 
             var policeIcon = L.icon({ iconUrl: 'icons/police.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
             var hospitalIcon = L.icon({ iconUrl: 'icons/hospital.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
+            var dojIcon = L.icon({ iconUrl: 'icons/doj.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
+            var cityIcon = L.icon({ iconUrl: 'icons/city.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
+            var foodIcon = L.icon({ iconUrl: 'icons/food.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
+            var mecIcon = L.icon({ iconUrl: 'icons/mec.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
 
             const mapData = {
                 gangs: [
@@ -179,10 +183,13 @@
                 ],
                 services: [
                     { x: 937.27, y: -1345.27, name: "La Mesa PD", icon: policeIcon, color: "#4facfe" },
-                    { x: 1136.32, y: -1460.88, name: "EMS", icon: hospitalIcon, color: "#ff4b4b" }
+                    { x: 1136.32, y: -1460.88, name: "EMS", icon: hospitalIcon, color: "#ff4b4b" },
+                    { x: 578.32, y: -813.88, name: "DoJ", icon: dojIcon, color: "#ffffff" },
+                    { x: 111.11, y: -683.29, name: "City Hall", icon: cityIcon, color: "#ffffff" }
                 ],
                 jobs: [
-                    { x: 450, y: -600, name: "Mechanic", color: "#aaaaaa" }
+                    { x: -521.50, y: -1069.50, name: "Strokemasters", icon: mecIcon, color: "#ffffff" },
+                    { x: 453.06, y: -684.11, name: "Burgershot", icon: foodIcon, color: "#ffffff" }
                 ],
                 assets: [
                     { x: 469.87, y: 3383.51, name: "High Pistols Craft", color: "#ffffff" },
@@ -194,7 +201,7 @@
                     { x: -622.75, y: -2320.00, name: "House Robberies", color: "#ffffff" },
                     { x: 727.13, y: -1878.70, name: "Weed Run", color: "#ffffff" },
                     { x: 95.50, y: -1565.00, name: "Chop", color: "#ffffff" },
-                    { x: 523.84, y: -1286.52, name: "Roof Robberies", color: "#ffffff" },
+                    { x: 523.84, y: -1286.52, name: "Roof Robberies", color: "#ffffff" }
                 ]
             };
 
@@ -208,7 +215,8 @@
                 addNavItem('service-menu', svc);
             });
             mapData.jobs.forEach(job => {
-                L.circleMarker(gtaToMap(job.x, job.y), { radius: 6, color: '#fff', fillColor: job.color, fillOpacity: 1 }).bindPopup(`<b>${job.name}</b>`).addTo(jobGroup);
+                // Χρήση L.marker αντί για κύκλο για να φαίνεται το icon
+                L.marker(gtaToMap(job.x, job.y), {icon: job.icon}).bindPopup(`<b>${job.name}</b>`).addTo(jobGroup);
                 addNavItem('job-menu', job);
             });
             mapData.assets.forEach(asset => {
@@ -235,7 +243,9 @@
                         <div class="admin-code">x: ${x}, y: ${y}</div>
                         <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">GANG OBJECT:</div>
                         <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", color: "#ffffff", desc: "...", radius: 100 },</div>
-                        <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">JOB/SERVICE/ASSET:</div>
+                        <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">SERVICE OBJECT (ICON):</div>
+                        <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", icon: iconName, color: "#ffffff" },</div>
+                        <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">JOB/ASSET OBJECT:</div>
                         <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", color: "#ffffff" },</div>
                     </div>
                 `).openOn(map);
