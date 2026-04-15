@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RP Server Interactive Map - Live Locations</title>
+    <title>RP Server Interactive Map</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -19,14 +19,9 @@
             width: 250px; max-height: 85vh; overflow-y: auto; 
         }
 
-        #sidebar::-webkit-scrollbar { width: 6px; }
-        #sidebar::-webkit-scrollbar-thumb { background: #4facfe; border-radius: 10px; }
-        #sidebar::-webkit-scrollbar-track { background: #222; }
-
         .sidebar-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #4facfe; }
         .sidebar-header h2 { margin: 0; font-size: 22px; color: #4facfe; text-transform: uppercase; letter-spacing: 2px; }
-        .sidebar-header p { margin: 5px 0 0 0; font-size: 12px; color: #888; }
-
+        
         .sidebar-section { margin-bottom: 20px; } 
         .sidebar-section h3 { margin: 0 0 12px 0; color: #aaa; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -36,22 +31,17 @@
 
         .leaflet-popup-content-wrapper { background-color: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 8px; }
         .leaflet-popup-tip { background-color: #1a1a1a; }
-        .popup-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; text-transform: uppercase; }
-        .popup-desc { font-size: 13px; color: #aaa; margin: 0; }
         
         .admin-popup { color: #ffeb3b; font-size: 12px; }
         .admin-code { background: #000; border: 1px solid #444; padding: 5px; margin-top: 5px; user-select: all; font-family: monospace; color: #0f0;}
 
-        /* Κουτί Τοποθεσίας */
         #coords-box {
             position: absolute; bottom: 20px; left: 20px;
             background-color: rgba(15, 15, 15, 0.9); border: 1px solid #4facfe;
             border-radius: 8px; padding: 10px 15px; color: #fff;
             font-size: 15px; z-index: 1000; backdrop-filter: blur(5px);
-            pointer-events: none; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
             min-width: 200px; text-align: center;
         }
-        #coords-box span { color: #4facfe; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -62,9 +52,9 @@
             <p>Interactive Map</p>
         </div>
 
-	<div class="sidebar-section">
+        <div class="sidebar-section">
             <h3 style="color: #ff4b4b;">💀 Criminal Organizations</h3>
-            <label class="filter-label"><input type="checkbox" id="check-gang" checked> 🏴 Gangs</label>
+            <label class="filter-label"><input type="checkbox" id="check-gang" checked> 🏴 Gang Zones</label>
         </div>
 
         <div class="sidebar-section">
@@ -77,11 +67,6 @@
             <h3>💼 Civilian Jobs</h3>
             <label class="filter-label"><input type="checkbox" id="check-mechanic" checked> 🔧 Μηχανικοί</label>
         </div>
-
-        <div class="sidebar-section">
-            <h3 style="color: #ff4b4b;">🎯 Assets</h3>
-            <label class="filter-label"><input type="checkbox" id="check-gang" checked> 🔪 Gangs</label>
-        </div>
     </div>
 
     <div id="coords-box">📍 <span id="location-name">San Andreas</span></div>
@@ -91,6 +76,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        // 1. Ρύθμιση Χάρτη
         var map = L.map('gta-map', {
             crs: L.CRS.Simple, minZoom: -1.5, maxZoom: 2, zoomControl: false
         });
@@ -100,55 +86,44 @@
         map.fitBounds(bounds);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+        // 2. Groups
         var policeGroup = L.layerGroup().addTo(map);
         var hospitalGroup = L.layerGroup().addTo(map);
         var mechanicGroup = L.layerGroup().addTo(map);
         var gangGroup = L.layerGroup().addTo(map);
 
-        // Χρησιμοποιούμε τα τοπικά αρχεία από τον φάκελο icons
-        var policeIcon = L.icon({ 
-            iconUrl: 'icons/police.jpg', 
-            iconSize: [28, 28], 
-            iconAnchor: [14, 14],
-            popupAnchor: [0, -10]
-        });
+        // 3. Icons
+        var policeIcon = L.icon({ iconUrl: 'icons/police.jpg', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -10] });
+        var hospitalIcon = L.icon({ iconUrl: 'icons/hospital.jpg', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -10] });
+        var gangIcon = L.icon({ iconUrl: 'icons/gang.png', iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -10] });
+        var mechanicIcon = L.icon({ iconUrl: 'icons/mechanic.png', iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -10] });
 
-        var hospitalIcon = L.icon({ 
-            iconUrl: 'icons/hospital.jpg', 
-            iconSize: [28, 28], 
-            iconAnchor: [14, 14],
-            popupAnchor: [0, -10]
-        });
+        // 4. Functions
+        function gtaToMap(x, y) { return [y, x]; }
 
-        var gangIcon = L.icon({ 
-            iconUrl: 'icons/gang.png', 
-            iconSize: [28, 28], 
-            iconAnchor: [14, 14],
-            popupAnchor: [0, -10]
-        });
+        // ΑΥΤΗ Η ΣΥΝΑΡΤΗΣΗ ΕΛΕΙΠΕ
+        function addGangZone(x, y, radius, color, name, desc) {
+            L.circle(gtaToMap(x, y), { color: color, fillColor: color, fillOpacity: 0.3, radius: radius }).addTo(gangGroup);
+            L.circleMarker(gtaToMap(x, y), { radius: 5, color: '#fff', fillColor: color, fillOpacity: 1 })
+              .bindPopup(`<b>${name}</b><br>${desc}`).addTo(gangGroup);
+        }
 
-        var mechanicIcon = L.icon({ 
-            iconUrl: 'icons/mechanic.png', 
-            iconSize: [26, 26], 
-            iconAnchor: [13, 13],
-            popupAnchor: [0, -10]
-        });
-
-	        // --- ΠΡΟΣΘΗΚΗ ΣΥΜΜΟΡΙΩΝ ---
-        // Χρήση: x, y, ακτίνα, χρώμα, όνομα, περιγραφή
+        // 5. Προσθήκη Blips
         addGangZone(497.00, -2056.00, 60, "#800080", "Ballas", "Grove Street."); 
         addGangZone(416.50, -1736.00, 60, "#008000", "Families", "Forum Dr.");
         addGangZone(635.00, -2120.00, 60, "#ffcc00", "Vagos", "Jamestown.");
 
-        function gtaToMap(x, y) { return [y, x]; }
+        L.marker(gtaToMap(705.50, -1419.50), {icon: policeIcon}).bindPopup('<b>Mission Row PD</b>').addTo(policeGroup);
+        L.marker(gtaToMap(1125.00, -1772.00), {icon: hospitalIcon}).bindPopup('<b>Pillbox Hill</b>').addTo(hospitalGroup);
 
-        L.marker(gtaToMap(705.50, -1419.50), {icon: policeIcon}).bindPopup('<div class="popup-title">Mission Row PD</div>').addTo(policeGroup);
-        L.marker(gtaToMap(1125.00, -1772.00), {icon: hospitalIcon}).bindPopup('<div class="popup-title">Pillbox Hill</div>').addTo(hospitalGroup);
-
+        // 6. Toggle Layers
         function toggleLayer(checkboxId, layerGroup) {
-            document.getElementById(checkboxId).addEventListener('change', function() {
-                if (this.checked) { map.addLayer(layerGroup); } else { map.removeLayer(layerGroup); }
-            });
+            let cb = document.getElementById(checkboxId);
+            if(cb) {
+                cb.addEventListener('change', function() {
+                    if (this.checked) { map.addLayer(layerGroup); } else { map.removeLayer(layerGroup); }
+                });
+            }
         }
 
         toggleLayer('check-police', policeGroup);
@@ -156,49 +131,27 @@
         toggleLayer('check-mechanic', mechanicGroup);
         toggleLayer('check-gang', gangGroup);
 
-        // ---------------------------------------------------------
-        // ΒΑΣΗ ΔΕΔΟΜΕΝΩΝ ΠΕΡΙΟΧΩΝ (ZONES)
-        // ---------------------------------------------------------
-        // Εδώ ορίζουμε τα "αόρατα κουτιά". 
-        // xMin/xMax και yMin/yMax είναι τα όρια της κάθε περιοχής.
-        const gtaZones = [
-            // --- 1. ΜΙΚΡΕΣ ΠΕΡΙΟΧΕΣ & ΔΡΟΜΟΙ (Πάνω-πάνω) ---
-            { name: "Mission Row PD", xMin: 410, xMax: 440, yMin: -1000, yMax: -970 },
-            { name: "Legion Square", xMin: 150, xMax: 250, yMin: -950, yMax: -850 },
-            { name: "Route 68 (Βενζινάδικο)", xMin: 1150, xMax: 1220, yMin: 2630, yMax: 2680 },
-            { name: "Alta Street", xMin: -300, xMax: -150, yMin: -1000, yMax: -800 },
+        // 7. Coords Tracker (MouseMove)
+        map.on('mousemove', function(e) {
+            document.getElementById('location-name').innerText = "X: " + e.latlng.lng.toFixed(2) + " | Y: " + e.latlng.lat.toFixed(2);
+        });
 
-            // --- 2. ΜΕΣΑΙΕΣ ΠΕΡΙΟΧΕΣ / ΣΥΝΟΙΚΙΕΣ ---
-            { name: "Vinewood Hills", xMin: -1500, xMax: 1500, yMin: 200, yMax: 1500 },
-            { name: "Sandy Shores", xMin: 1000, xMax: 2500, yMin: 3000, yMax: 4000 },
-            
-            // --- 3. ΜΕΓΑΛΕΣ ΠΕΡΙΟΧΕΣ (Κάτω-κάτω ως "Δίχτυ Ασφαλείας") ---
-            { name: "Los Santos City", xMin: -3000, xMax: 3000, yMin: -4000, yMax: 200 },
-            { name: "Blaine County", xMin: -4000, xMax: 4000, yMin: 200, yMax: 8000 }
-        ];
-
-        
-	// --- ADMIN TOOL (Κρατάμε και τις συντεταγμένες εδώ για να σε βοηθάει!) ---
+        // 8. Admin Tool
         map.on('contextmenu', function(e) {
             var x = e.latlng.lng.toFixed(2);
             var y = e.latlng.lat.toFixed(2);
-
             var markerSnippet = `L.marker(gtaToMap(${x}, ${y}), {icon: policeIcon}).addTo(policeGroup);`;
-            var gangSnippet = `addGangZone(${x}, ${y}, 200, "#ff0000", "Name", "Desc");`;
+            var gangSnippet = `addGangZone(${x}, ${y}, 60, "#ff0000", "Name", "Desc");`;
 
             L.popup().setLatLng(e.latlng).setContent(`
                 <div class="admin-popup">
                     <strong>🛠️ ADMIN MENU</strong><br>
                     Coords: ${x}, ${y}<br><br>
-                    <span>Για Marker (Εικονίδιο):</span>
-                    <div class="admin-code">${markerSnippet}</div>
-                    <br>
-                    <span>Για Gang Zone (Κύκλος):</span>
-                    <div class="admin-code">${gangSnippet}</div>
+                    <span>Marker:</span><div class="admin-code">${markerSnippet}</div><br>
+                    <span>Gang Zone:</span><div class="admin-code">${gangSnippet}</div>
                 </div>
             `).openOn(map);
         });
-
     </script>
 </body>
 </html>
