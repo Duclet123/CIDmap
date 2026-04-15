@@ -53,7 +53,27 @@
 
         .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         #sidebar-coords { margin-top: auto; padding: 15px; background: #161616; border-top: 1px solid #222; font-family: monospace; color: #888; font-size: 12px; }
-        .admin-code { background: #000; border: 1px solid #444; padding: 5px; margin-top: 5px; user-select: all; font-family: monospace; color: #0f0; font-size: 10px;}
+        
+        /* ADMIN POPUP - UPDATED COLORS AND FONT SIZE */
+        .leaflet-popup-content-wrapper { background: #000000 !important; color: #ffffff !important; border: 1px solid #a1035a; border-radius: 8px; width: 380px; }
+        .leaflet-popup-content { margin: 15px; width: auto !important; }
+        .leaflet-popup-tip { background: #a1035a !important; }
+        
+        .admin-code { 
+            background: #111; 
+            border: 1px solid #333; 
+            padding: 10px; 
+            margin-top: 5px; 
+            user-select: all; 
+            font-family: 'Courier New', monospace; 
+            color: #ffffff; /* Αλλαγή σε άσπρο */
+            font-size: 14px; /* Μεγαλύτερα γράμματα */
+            border-radius: 4px;
+            white-space: pre-wrap; 
+            word-break: break-all;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -94,6 +114,20 @@
             </div>
 
             <div class="menu-category">
+                <div class="category-header" onclick="toggleMenu('job-menu')">
+                    <div class="header-title">
+                        <label class="switch">
+                            <input type="checkbox" id="check-jobs" checked onclick="event.stopPropagation(); toggleLayer('check-jobs', jobGroup)">
+                            <span class="slider"></span>
+                        </label>
+                        CIVILIAN JOBS
+                    </div>
+                    <span id="job-count" class="count-badge">0</span>
+                </div>
+                <div id="job-menu" class="category-content"></div>
+            </div>
+
+            <div class="menu-category">
                 <div class="category-header" onclick="toggleMenu('asset-menu')">
                     <div class="header-title">
                         <label class="switch">
@@ -124,24 +158,41 @@
         var policeGroup = L.layerGroup().addTo(map);
         var gangGroup = L.layerGroup().addTo(map);
         var assetGroup = L.layerGroup().addTo(map);
+        var jobGroup = L.layerGroup().addTo(map);
 
         var policeIcon = L.icon({ iconUrl: 'icons/police.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
         var hospitalIcon = L.icon({ iconUrl: 'icons/hospital.jpg', iconSize: [28, 28], iconAnchor: [14, 14] });
 
-        // --- ΔΕΔΟΜΕΝΑ ---
+        // --- DATA ---
         const mapData = {
             gangs: [
-                { x: 497, y: -2056, name: "Ballas", color: "#a370ff", desc: "Grove St.", radius: 100 },
-                { x: 416, y: -1736, name: "Families", color: "#70ff70", desc: "Forum Dr.", radius: 100 },
-                { x: 635, y: -2120, name: "Vagos", color: "#ffcc00", desc: "Rancho.", radius: 100 }
+                { x: 1259.50, y: -1130.25, name: "RTM", color: "#0F8ABD", desc: "Mirror Park", radius: 100 },
+		{ x: -352.50, y: -530.50, name: "Team Locos", color: "#ffffff", desc: "Richman Hotel", radius: 100 },
+		{ x: 640.25, y: -1593.00, name: "MOB", color: "#4002AD", desc: "...", radius: 100 },
+		{ x: 955.00, y: -2350.50, name: "Ultimate Outlaws", color: "#EDFF00", desc: "...", radius: 100 },
+		{ x: -100.50, y: -1614.25, name: "VTS", color: "#696969", desc: "...", radius: 100 },
+		{ x: 1015.75, y: -876.00, name: "WSR", color: "#FF7AED", desc: "...", radius: 100 },
             ],
             services: [
-                { x: 705.5, y: -1419.5, name: "Mission Row PD", icon: policeIcon, color: "#4facfe" },
-                { x: 1125, y: -1772, name: "Pillbox EMS", icon: hospitalIcon, color: "#ff4b4b" }
+                { x: 938.00, y: -1625.5, name: "La Mesa PD", icon: policeIcon, color: "#4facfe" },
+                { x: 1125, y: -1772, name: "EMS", icon: hospitalIcon, color: "#ff4b4b" }
+            ],
+            jobs: [
+                { x: -550, y: -190, name: "Taxi Driver", color: "#ffcc00" },
+                { x: 450, y: -600, name: "Mechanic", color: "#aaaaaa" }
             ],
             assets: [
-                { x: -75, y: -825, name: "Jewelry Store", color: "#ffcc00" },
-                { x: 150, y: -1040, name: "Central Bank", color: "#ffcc00" }
+                { x: 2152.75, y: 2303.75, name: "Medium Pistol Craft", color: "#ffffff" },
+		{ x: 470.00, y: 3740.50, name: "High Pistols Craft", color: "#ffffff" },
+		{ x: 1355.75, y: 3594.75, name: "Boosting", color: "#ffffff" },
+		{ x: 2004.75, y: 1155.00, name: "High SMG Craft", color: "#ffffff" },
+		{ x: 415.50, y: -2475.50, name: "Low SMG Craft", color: "#ffffff" },
+		{ x: -601.00, y: -2736.50, name: "House Robberies", color: "#ffffff" },
+		{ x: 737.50, y: -2217.00, name: "Weed Run", color: "#ffffff" },
+		{ x: 97.50, y: -1877.25, name: "Chop", color: "#ffffff" },
+		{ x: 529.75, y: -1558.50, name: "Roof Robberies", color: "#ffffff" },
+		
+		
             ]
         };
 
@@ -149,43 +200,43 @@
         function toggleMenu(id) { document.getElementById(id).classList.toggle('active'); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); setTimeout(() => { map.invalidateSize(); }, 400); }
         function goToLoc(x, y) { map.flyTo(gtaToMap(x, y), 1); }
-        function toggleLayer(checkboxId, layerGroup) { document.getElementById(checkboxId).checked ? map.addLayer(layerGroup) : map.removeLayer(layerGroup); }
+        function toggleLayer(checkboxId, group) { document.getElementById(checkboxId).checked ? map.addLayer(group) : map.removeLayer(group); }
 
         function initMap() {
             // Gangs
             mapData.gangs.forEach(gang => {
                 L.circle(gtaToMap(gang.x, gang.y), { color: gang.color, fillColor: gang.color, fillOpacity: 0.2, radius: gang.radius }).addTo(gangGroup);
-                L.circleMarker(gtaToMap(gang.x, gang.y), { radius: 4, color: '#fff', fillColor: gang.color, fillOpacity: 1 }).bindPopup(`<b>${gang.name}</b><br>${gang.desc}`).addTo(gangGroup);
-                
-                const item = document.createElement('div');
-                item.className = 'nav-item';
-                item.innerHTML = `<span class="dot" style="background:${gang.color}; box-shadow:0 0 8px ${gang.color}"></span> ${gang.name}`;
-                item.onclick = () => goToLoc(gang.x, gang.y);
-                document.getElementById('criminal-menu').appendChild(item);
+                L.circleMarker(gtaToMap(gang.x, gang.y), { radius: 4, color: '#fff', fillColor: gang.color, fillOpacity: 1 }).bindPopup(`<b>${gang.name}</b>`).addTo(gangGroup);
+                addNavItem('criminal-menu', gang);
             });
-            document.getElementById('gang-count').innerText = mapData.gangs.length;
-
             // Services
             mapData.services.forEach(svc => {
                 L.marker(gtaToMap(svc.x, svc.y), {icon: svc.icon}).bindPopup(`<b>${svc.name}</b>`).addTo(policeGroup);
-                const item = document.createElement('div');
-                item.className = 'nav-item';
-                item.innerHTML = `<span class="dot" style="background:${svc.color}; box-shadow:0 0 8px ${svc.color}"></span> ${svc.name}`;
-                item.onclick = () => goToLoc(svc.x, svc.y);
-                document.getElementById('service-menu').appendChild(item);
+                addNavItem('service-menu', svc);
             });
-            document.getElementById('service-count').innerText = mapData.services.length;
-
+            // Jobs
+            mapData.jobs.forEach(job => {
+                L.circleMarker(gtaToMap(job.x, job.y), { radius: 6, color: '#fff', fillColor: job.color, fillOpacity: 1 }).bindPopup(`<b>${job.name}</b>`).addTo(jobGroup);
+                addNavItem('job-menu', job);
+            });
             // Assets
             mapData.assets.forEach(asset => {
                 L.marker(gtaToMap(asset.x, asset.y)).bindPopup(`<b>${asset.name}</b>`).addTo(assetGroup);
-                const item = document.createElement('div');
-                item.className = 'nav-item';
-                item.innerHTML = `<span class="dot" style="background:${asset.color}; box-shadow:0 0 8px ${asset.color}"></span> ${asset.name}`;
-                item.onclick = () => goToLoc(asset.x, asset.y);
-                document.getElementById('asset-menu').appendChild(item);
+                addNavItem('asset-menu', asset);
             });
+
+            document.getElementById('gang-count').innerText = mapData.gangs.length;
+            document.getElementById('service-count').innerText = mapData.services.length;
+            document.getElementById('job-count').innerText = mapData.jobs.length;
             document.getElementById('asset-count').innerText = mapData.assets.length;
+        }
+
+        function addNavItem(menuId, data) {
+            const item = document.createElement('div');
+            item.className = 'nav-item';
+            item.innerHTML = `<span class="dot" style="background:${data.color}; box-shadow:0 0 8px ${data.color}"></span> ${data.name}`;
+            item.onclick = () => goToLoc(data.x, data.y);
+            document.getElementById(menuId).appendChild(item);
         }
 
         initMap();
@@ -199,8 +250,13 @@
             var x = e.latlng.lng.toFixed(2), y = e.latlng.lat.toFixed(2);
             L.popup().setLatLng(e.latlng).setContent(`
                 <div class="admin-popup">
-                    <strong style="color:#a1035a">🛠️ ADMIN</strong><br>
+                    <strong style="color:#a1035a; font-size:16px;">🛠️ ADMIN PANEL</strong><br>
+                    <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">COORDS:</div>
+                    <div class="admin-code">${x}, ${y}</div>
+                    <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">GANG OBJECT:</div>
                     <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", color: "#ffffff", desc: "...", radius: 100 },</div>
+                    <div style="margin-top:10px; font-size:12px; color:#ddd; font-weight:bold;">JOB/SERVICE/ASSET:</div>
+                    <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", color: "#ffffff" },</div>
                 </div>
             `).openOn(map);
         });
