@@ -114,7 +114,7 @@
         });
 
         var hospitalIcon = L.icon({ 
-            iconUrl: 'icons/hospital.png', 
+            iconUrl: 'icons/hospital.jpg', 
             iconSize: [28, 28], 
             iconAnchor: [14, 14],
             popupAnchor: [0, -10]
@@ -134,28 +134,7 @@
             popupAnchor: [0, -10]
         });
 
-	// --- ΣΥΝΑΡΤΗΣΗ ΓΙΑ ΔΗΜΙΟΥΡΓΙΑ GANG ZONE ---
-        function addGangZone(x, y, radius, color, name, description) {
-            // 1. Ο μεγάλος κύκλος (Η περιοχή)
-            L.circle(gtaToMap(x, y), {
-                color: color,       // Το χρώμα του περιγράμματος
-                fillColor: color,   // Το χρώμα του γεμίσματος
-                fillOpacity: 0.3,   // Πόσο διαφανές θα είναι (0.3 = 30%)
-                radius: radius      // Το μέγεθος της περιοχής
-            }).addTo(gangGroup);
-
-            // 2. Η τελεία στη μέση (Το κέντρο)
-            L.circleMarker(gtaToMap(x, y), {
-                radius: 5,          // Μέγεθος τελείας σε pixels
-                color: '#ffffff',    // Λευκό περίγραμμα για να ξεχωρίζει
-                fillColor: color,   // Το χρώμα της συμμορίας
-                fillOpacity: 1,
-                weight: 2           // Πάχος περιγράμματος
-            }).bindPopup(`<div class="popup-title" style="color:${color}">${name}</div><p class="popup-desc">${description}</p>`)
-              .addTo(gangGroup);
-        }
-
-        // --- ΠΡΟΣΘΗΚΗ ΣΥΜΜΟΡΙΩΝ ---
+	        // --- ΠΡΟΣΘΗΚΗ ΣΥΜΜΟΡΙΩΝ ---
         // Χρήση: x, y, ακτίνα, χρώμα, όνομα, περιγραφή
         addGangZone(497.00, -2056.00, 60, "#800080", "Ballas", "Grove Street."); 
         addGangZone(416.50, -1736.00, 60, "#008000", "Families", "Forum Dr.");
@@ -164,7 +143,7 @@
         function gtaToMap(x, y) { return [y, x]; }
 
         L.marker(gtaToMap(705.50, -1419.50), {icon: policeIcon}).bindPopup('<div class="popup-title">Mission Row PD</div>').addTo(policeGroup);
-        L.marker(gtaToMap(298.5, -584.6), {icon: hospitalIcon}).bindPopup('<div class="popup-title">Pillbox Hill</div>').addTo(hospitalGroup);
+        L.marker(gtaToMap(1125.00, -1772.00), {icon: hospitalIcon}).bindPopup('<div class="popup-title">Pillbox Hill</div>').addTo(hospitalGroup);
 
         function toggleLayer(checkboxId, layerGroup) {
             document.getElementById(checkboxId).addEventListener('change', function() {
