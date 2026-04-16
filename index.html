@@ -209,12 +209,12 @@
             jobGroup = L.layerGroup().addTo(map);
 
             const icons = {
-                police: createIcon('police'),
-                hospital: createIcon('hospital'),
-                doj: createIcon('doj'),
-                city: createIcon('city'),
-                food: createIcon('food'),
-                mec: createIcon('mec', 35)
+                police: createIcon('police'), hospital: createIcon('hospital'), doj: createIcon('doj'),
+                city: createIcon('city'), food: createIcon('food'), mec: createIcon('mec', 35),
+                bar: createIcon('bar'), pawn: createIcon('pawn'), tech: createIcon('tech'),
+                gun: createIcon('gun'), pill: createIcon('pill'), weed: createIcon('weed'),
+                tattoo: createIcon('tattoo'), strip: createIcon('strip'), skate: createIcon('skate'),
+                pet: createIcon('pet'), tailor: createIcon('tailor'), smoke: createIcon('smoke')
             };
 
             const mapData = {
@@ -234,21 +234,32 @@
                     { x: 111.11, y: -683.29, name: "City Hall", type: "Public Service", address: "Alta", icon: icons.city, color: "#ffffff" }
                 ],
                 jobs: [
-                    { x: -521.50, y: -1069.50, name: "Strokemasters", type: "Mechanic", address: "La Puerta", icon: icons.mec, color: "#ffffff", img: "mechanic.jpg" },
-                    { x: 453.06, y: -684.11, name: "Burgershot", type: "Restaurant", address: "Vespucci Canals", icon: icons.food, color: "#ffffff", img: "burgershot.jpg" },
-                    { x: 441.50, y: -1528.50, name: "Tacos", type: "Fast Food", address: "Rancho", icon: icons.food, color: "#ffffff", img: "tacos.jpg" }
+                    { x: -521.50, y: -1069.50, name: "Strokemasters", type: "Mechanic", address: "La Puerta", icon: icons.mec, color: "#ffffff", img: "strokemaster.jpg" },
+                    { x: -279.08, y: -1087.60, name: "Burgershot", type: "Restaurant", address: "Vespucci Canals", icon: icons.food, color: "#ffffff", img: "burgershot.jpg" },
+                    { x: 441.50, y: -1528.50, name: "Tacos", type: "Fast Food", address: "Rancho", icon: icons.food, color: "#ffffff", img: "tacos.jpg" },
+		    { x: 1108.06, y: -950.71, name: "Leapfrog", type: "Food", address: "Mirror Park Lake", icon: icons.food, color: "#ffffff", img: "leapfrog.jpg" },
+		    { x: 484.72, y: -393.15, name: "Greek Gyro King", type: "Food", address: "Vinewood Blvd", icon: icons.food, color: "#ffffff", img: "gyro.jpg" },
+		    { x: 739.00, y: -1382.75, name: "2 Brothers Workshop", type: "Mechanic", address: "Little Bighorn", icon: icons.mec, color: "#ffffff", img: "brothers.jpg" },
+		    { x: 78.50, y: -1240.00, name: "Los Santos Custom", type: "Mechanic", address: "Calais Avenue", icon: icons.mec, color: "#ffffff", img: "ls.jpg" },
+		    { x: 443.75, y: -1234.25, name: "Red Dot", type: "Gunshop", address: "Adam's Apple Blvd", icon: icons.gun, color: "#ffffff", img: "reddot.jpg" },
+  		    { x: -664.64, y: -1286.09, name: "Pearls", type: "Food", address: "Luna Park", icon: icons.food, color: "#ffffff", img: "pearls.jpg" },
+		    { x: 223.50, y: -396.25, name: "Roster's Rest", type: "Food", address: "Eclipse Blvd", icon: icons.food, color: "#ffffff", img: "roster.jpg" },
+		    { x: -1415.27, y: -309.71, name: "Saltlab Mechanic", type: "Mechanic", address: "Ineseno Road", icon: icons.mec, color: "#ffffff", img: "saltmec.jpg" },
+		    { x: -1407.14, y: -291.68, name: "Saltlab Cafe", type: "Food", address: "Ineseno Road", icon: icons.food, color: "#ffffff", img: "saltfood.jpg" },
+		    { x: 1020.97, y: -1178.65, name: "Big Tuna", type: "Mechanic", address: "Vespucci Blvd", icon: icons.mec, color: "#ffffff", img: "bigtuna.jpg" },
+		    
                 ],
                 assets: [
-                    { x: 469.87, y: 3383.51, name: "High Pistols Craft", type: "Illegal Craft", address: "Paleto Bay", color: "#ffffff" },
-                    { x: 2150.36, y: 2125.67, name: "Medium Pistol Craft", type: "Illegal Craft", address: "Grapeseed", color: "#ffffff" },
-                    { x: 880.44, y: -1382.84, name: "Low Pistols Craft", type: "Illegal Craft", address: "La Mesa", color: "#ffffff" },
-                    { x: 1357.00, y: 3259.50, name: "Boosting", type: "Illegal Activity", address: "Mount Chiliad", color: "#ffffff" },
-                    { x: 2004.00, y: 1125.00, name: "High SMG Craft", type: "Illegal Craft", address: "Grapeseed", color: "#ffffff" },
-                    { x: 416.82, y: -2098.13, name: "Low SMG Craft", type: "Illegal Craft", address: "Davis", color: "#ffffff" },
-                    { x: -622.75, y: -2320.00, name: "House Robberies", type: "Illegal Activity", address: "Elysian Island", color: "#ffffff" },
-                    { x: 727.13, y: -1878.70, name: "Weed Run", type: "Illegal Activity", address: "Rancho", color: "#ffffff" },
-                    { x: 95.50, y: -1565.00, name: "Chop", type: "Illegal Activity", address: "Strawberry", color: "#ffffff" },
-                    { x: 523.84, y: -1286.52, name: "Roof Robberies", type: "Illegal Activity", address: "Downtown", color: "#ffffff" }
+                    { x: 469.87, y: 3383.51, name: "High Pistols Craft", type: "Illegal Craft", address: "Paleto Bay", color: "#ffffff", img: "pistol3.jpg" },
+                    { x: 2150.36, y: 2125.67, name: "Medium Pistol Craft", type: "Illegal Craft", address: "Grapeseed", color: "#ffffff", img: "pistol2.jpg" },
+                    { x: 880.44, y: -1382.84, name: "Low Pistols Craft", type: "Illegal Craft", address: "La Mesa", color: "#ffffff", img: "pistol1.jpg" },
+                    { x: 1357.00, y: 3259.50, name: "Boosting", type: "Illegal Activity", address: "Mount Chiliad", color: "#ffffff", img: "boosting.jpg" },
+                    { x: 2004.00, y: 1125.00, name: "High SMG Craft", type: "Illegal Craft", address: "Grapeseed", color: "#ffffff", img: "smg2.jpg" },
+                    { x: 416.82, y: -2098.13, name: "Low SMG Craft", type: "Illegal Craft", address: "Davis", color: "#ffffff", img: "smg.jpg" },
+                    { x: -622.75, y: -2320.00, name: "House Robberies", type: "Illegal Activity", address: "Elysian Island", color: "#ffffff", img: "house.jpg" },
+                    { x: 727.13, y: -1878.70, name: "Weed Run", type: "Illegal Activity", address: "Rancho", color: "#ffffff", img: "weed.jpg" },
+                    { x: 95.50, y: -1565.00, name: "Chop", type: "Illegal Activity", address: "Strawberry", color: "#ffffff", img: "chop.jpg" },
+                    { x: 523.84, y: -1286.52, name: "Roof Robberies", type: "Illegal Activity", address: "Downtown", color: "#ffffff", img: "roof.jpg" }
                 ]
             };
 
