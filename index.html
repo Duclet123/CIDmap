@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* Base Styling */
-        body, html { margin: 0; padding: 0; height: 100%; background-color: #0c0c0c; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; height: 100%; background-color: #000000; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         .main-container { display: flex; width: 100vw; height: 100vh; }
 
         /* Sidebar Styling */
         #sidebar {
-            width: 300px; min-width: 300px; background-color: #0f0f0f; border-right: 1px solid #2a1a0a;
-            display: flex; flex-direction: column; color: #fff; z-index: 10; overflow-y: auto;
+            width: 300px; min-width: 300px; background-color: #000000; border-right: 1px solid #a1035a;
+            display: flex; flex-direction: column; color: #a1035a; z-index: 10; overflow-y: auto;
             transition: margin-left 0.4s ease;
         }
         #sidebar.hidden { margin-left: -300px; }
-        #gta-map { flex-grow: 1; height: 100%; background: #0c0c0c; z-index: 1; }
+        #gta-map { flex-grow: 1; height: 100%; background: #000000; z-index: 1; }
 
         /* Map Fixes */
         .leaflet-image-layer { object-fit: contain !important; image-rendering: -webkit-optimize-contrast; }
@@ -57,7 +57,7 @@
 
         /* UI Elements */
         .sidebar-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #a1035a; }
-        #close-sidebar { background: #161616; border: 1px solid #a1035a; color: #a1035a; cursor: pointer; padding: 5px 10px; border-radius: 4px; font-weight: bold; }
+        #close-sidebar { background: #000000; border: 1px solid #a1035a; color: #a1035a; cursor: pointer; padding: 5px 10px; border-radius: 4px; font-weight: bold; }
         #open-sidebar { 
             position: absolute; top: 20px; left: 20px; z-index: 9999; 
             background: #a1035a; color: #000; border: none; cursor: pointer; 
@@ -67,7 +67,7 @@
         #sidebar.hidden ~ #open-sidebar { display: block !important; }
 
         /* Category Menu */
-        .category-header { background: #161616; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
+        .category-header { background: #000000; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
         .header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 13px; color: #d1d1d1; }
         .switch { position: relative; display: inline-block; width: 34px; height: 18px; margin-right: 5px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -76,16 +76,16 @@
         input:checked + .slider { background-color: #a1035a; }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        .count-badge { background: #331a00; color: #a1035a; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-        .category-content { display: none; background: #0f0f0f; }
+        .count-badge { background: #a1035a; color: #FFFFFF; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .category-content { display: none; background: #000000; }
         .category-content.active { display: block; }
-        .nav-item { padding: 12px 20px; font-size: 14px; color: #b0b0b0; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; border-left: 3px solid transparent; }
-        .nav-item:hover { background: #1a1a1a; color: #fff; border-left: 3px solid #a1035a; }
+        .nav-item { padding: 12px 20px; font-size: 14px; color: #ffffff; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover { background: #000000; color: #fff; border-left: 3px solid #a1035a; }
         .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         
         .leaflet-popup-content-wrapper { background: #000000 !important; color: #ffffff !important; border: 1px solid #a1035a; border-radius: 8px; }
         .leaflet-popup-tip { background: #a1035a !important; }
-        #sidebar-coords { margin-top: auto; padding: 15px; background: #161616; border-top: 1px solid #222; font-family: monospace; color: #888; font-size: 12px; }
+        #sidebar-coords { margin-top: auto; padding: 15px; background: #000000; border-top: 1px solid #222; font-family: monospace; color: #888; font-size: 12px; }
     </style>
 </head>
 <body>
