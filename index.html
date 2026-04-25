@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CID Map | Infinity</title>
+    <title>CID Map | 2K25 Purple</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* Base Styling */
@@ -12,8 +12,8 @@
 
         /* Sidebar Styling */
         #sidebar {
-            width: 300px; min-width: 300px; background-color: #000000; border-right: 1px solid #a1035a;
-            display: flex; flex-direction: column; color: #a1035a; z-index: 10; overflow-y: auto;
+            width: 300px; min-width: 300px; background-color: #000000; border-right: 1px solid #7D3DB7;
+            display: flex; flex-direction: column; color: #7D3DB7; z-index: 10; overflow-y: auto;
             transition: margin-left 0.4s ease;
         }
         #sidebar.hidden { margin-left: -300px; }
@@ -26,66 +26,59 @@
         .popup-container { color: #fff; text-align: center; width: 220px; }
         .popup-img { 
             width: 100%; height: 120px; object-fit: cover; border-radius: 4px; 
-            margin-bottom: 8px; border: 1px solid #a1035a; cursor: pointer; 
+            margin-bottom: 8px; border: 1px solid #7D3DB7; cursor: pointer; 
             transition: 0.2s; background: #000;
         }
         .popup-img:hover { filter: brightness(1.2); }
-        .popup-title { font-size: 16px; font-weight: bold; color: #a1035a; margin-bottom: 6px; display: block; border-bottom: 1px solid #333; padding-bottom: 4px; }
+        .popup-title { font-size: 16px; font-weight: bold; color: #7D3DB7; margin-bottom: 6px; display: block; border-bottom: 1px solid #333; padding-bottom: 4px; }
         
         .popup-info-row { font-size: 12px; margin: 3px 0; display: flex; justify-content: space-between; gap: 10px; }
         .info-label { color: #888; font-weight: bold; white-space: nowrap; }
         .info-value { color: #ddd; text-align: right; }
 
-        /* Lightbox (Full Screen Image) */
+        /* Lightbox */
         #lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;
             cursor: pointer;
         }
-        #lightbox img { max-width: 85%; max-height: 85%; border: 2px solid #a1035a; border-radius: 5px; box-shadow: 0 0 30px rgba(161, 3, 90, 0.5); }
+        #lightbox img { max-width: 85%; max-height: 85%; border: 2px solid #7D3DB7; border-radius: 5px; box-shadow: 0 0 30px rgba(125, 61, 183, 0.5); }
 
-        /* Admin Panel Styling */
-        .admin-popup-container { width: 330px; max-height: 450px; overflow-y: auto; padding-right: 5px; }
-        .admin-popup-container::-webkit-scrollbar { width: 4px; }
-        .admin-popup-container::-webkit-scrollbar-thumb { background: #a1035a; border-radius: 10px; }
+        /* Admin Panel Styling - NO SCROLL & WIDER */
+        .admin-popup-container { width: 310px; }
+        .admin-section-title { color: #7D3DB7; font-size: 10px; font-weight: bold; margin-top: 8px; text-transform: uppercase; border-left: 2px solid #7D3DB7; padding-left: 5px; }
         .admin-code { 
-            background: #111; border: 1px solid #333; padding: 10px; margin: 5px 0; 
-            user-select: all; font-family: 'Courier New', monospace; color: #ffffff; 
-            font-size: 11px; border-radius: 4px; white-space: pre-wrap !important; 
-            word-break: break-all !important; line-height: 1.4; display: block;
+            background: #111; border: 1px solid #333; padding: 8px; margin: 4px 0; 
+            user-select: all; font-family: monospace; color: #ffffff; 
+            font-size: 10px; border-radius: 4px; white-space: pre-wrap !important; 
+            word-break: break-all !important; line-height: 1.3; display: block;
         }
 
         /* UI Elements */
-        .sidebar-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #a1035a; }
-        #close-sidebar { background: #000000; border: 1px solid #a1035a; color: #a1035a; cursor: pointer; padding: 5px 10px; border-radius: 4px; font-weight: bold; }
-        #open-sidebar { 
-            position: absolute; top: 20px; left: 20px; z-index: 9999; 
-            background: #a1035a; color: #000; border: none; cursor: pointer; 
-            padding: 12px 18px; border-radius: 4px; font-weight: bold; font-size: 20px;
-            box-shadow: 0 0 20px rgba(161, 3, 90, 0.6); display: none; 
-        }
+        .sidebar-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #7D3DB7; }
+        #close-sidebar { background: #7D3DB7; border: 1px solid #7D3DB7; color: #000000; cursor: pointer; padding: 5px 10px; border-radius: 4px; font-weight: bold; }
+        #open-sidebar { position: absolute; top: 20px; left: 20px; z-index: 9999; background: #7D3DB7; color: #000; border: none; cursor: pointer; padding: 12px 18px; border-radius: 4px; font-weight: bold; font-size: 20px; display: none; }
         #sidebar.hidden ~ #open-sidebar { display: block !important; }
 
-        /* Category Menu */
         .category-header { background: #000000; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #222; }
         .header-title { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 13px; color: #d1d1d1; }
         .switch { position: relative; display: inline-block; width: 34px; height: 18px; margin-right: 5px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
         .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #a1035a; }
+        input:checked + .slider { background-color: #7D3DB7; }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        .count-badge { background: #a1035a; color: #FFFFFF; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-        .category-content { display: none; background: #000000; }
+        .count-badge { background: #7D3DB7; color: #ffffff; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .category-content { display: none; background: #0f0f0f; }
         .category-content.active { display: block; }
-        .nav-item { padding: 12px 20px; font-size: 14px; color: #ffffff; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; border-left: 3px solid transparent; }
-        .nav-item:hover { background: #000000; color: #fff; border-left: 3px solid #a1035a; }
+        .nav-item { padding: 12px 20px; font-size: 14px; color: #b0b0b0; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover { background: #1a1a1a; color: #fff; border-left: 3px solid #7D3DB7; }
         .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         
-        .leaflet-popup-content-wrapper { background: #000000 !important; color: #ffffff !important; border: 1px solid #a1035a; border-radius: 8px; }
-        .leaflet-popup-tip { background: #a1035a !important; }
-        #sidebar-coords { margin-top: auto; padding: 15px; background: #000000; border-top: 1px solid #222; font-family: monospace; color: #888; font-size: 12px; }
+        .leaflet-popup-content-wrapper { background: #000000 !important; color: #ffffff !important; border: 1px solid #7D3DB7; border-radius: 8px; }
+        .leaflet-popup-tip { background: #7D3DB7 !important; }
+        #sidebar-coords { margin-top: auto; padding: 15px; background: #161616; border-top: 1px solid #222; font-family: monospace; color: #888; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -95,18 +88,15 @@
     <div class="main-container">
         <div id="sidebar">
             <div class="sidebar-header">
-                <h2>♾️ INFINITY</h2>
+                <h2>2k25 Purple</h2>
                 <button id="close-sidebar" onclick="toggleSidebar()">❮</button>
             </div>
 
             <div class="menu-category">
                 <div class="category-header" onclick="handleCategoryClick(event, 'criminal-menu')">
                     <div class="header-title">
-                        <label class="switch">
-                            <input type="checkbox" id="check-gang" checked onclick="event.stopPropagation(); toggleLayer('check-gang', 'gang')">
-                            <span class="slider"></span>
-                        </label>
-                        CRIMINAL GROUPS
+                        <label class="switch"><input type="checkbox" id="check-gang" checked onclick="event.stopPropagation(); toggleLayer('check-gang', 'gang')"><span class="slider"></span></label>
+                        CRIMINAL ORGANIZATIONS
                     </div>
                     <span id="gang-count" class="count-badge">0</span>
                 </div>
@@ -116,10 +106,7 @@
             <div class="menu-category">
                 <div class="category-header" onclick="handleCategoryClick(event, 'service-menu')">
                     <div class="header-title">
-                        <label class="switch">
-                            <input type="checkbox" id="check-police" checked onclick="event.stopPropagation(); toggleLayer('check-police', 'police')">
-                            <span class="slider"></span>
-                        </label>
+                        <label class="switch"><input type="checkbox" id="check-police" checked onclick="event.stopPropagation(); toggleLayer('check-police', 'police')"><span class="slider"></span></label>
                         PUBLIC SERVICES
                     </div>
                     <span id="service-count" class="count-badge">0</span>
@@ -130,10 +117,7 @@
             <div class="menu-category">
                 <div class="category-header" onclick="handleCategoryClick(event, 'job-menu')">
                     <div class="header-title">
-                        <label class="switch">
-                            <input type="checkbox" id="check-jobs" checked onclick="event.stopPropagation(); toggleLayer('check-jobs', 'job')">
-                            <span class="slider"></span>
-                        </label>
+                        <label class="switch"><input type="checkbox" id="check-jobs" checked onclick="event.stopPropagation(); toggleLayer('check-jobs', 'job')"><span class="slider"></span></label>
                         CIVILIAN JOBS
                     </div>
                     <span id="job-count" class="count-badge">0</span>
@@ -144,10 +128,7 @@
             <div class="menu-category">
                 <div class="category-header" onclick="handleCategoryClick(event, 'asset-menu')">
                     <div class="header-title">
-                        <label class="switch">
-                            <input type="checkbox" id="check-assets" checked onclick="event.stopPropagation(); toggleLayer('check-assets', 'asset')">
-                            <span class="slider"></span>
-                        </label>
+                        <label class="switch"><input type="checkbox" id="check-assets" checked onclick="event.stopPropagation(); toggleLayer('check-assets', 'asset')"><span class="slider"></span></label>
                         CRIMINAL ASSETS
                     </div>
                     <span id="asset-count" class="count-badge">0</span>
@@ -169,32 +150,22 @@
         const imgFolder = "images/";
         const iconFolder = "icons/";
 
-        // Icons Definition
         const createIcon = (name, size = 28) => L.icon({
             iconUrl: `${iconFolder}${name}.jpg`,
             iconSize: [size, size],
             iconAnchor: [size/2, size/2]
         });
 
-        // Lightbox Function
         function openImage(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lightbox').style.display = 'flex';
         }
 
         function createInteractivePopup(data) {
-            let imgHtml = data.img ? `<img src="${imgFolder}${data.img}" class="popup-img" onclick="openImage(this.src)" title="Click for fullscreen">` : '';
+            let imgHtml = data.img ? `<img src="${imgFolder}${data.img}" class="popup-img" onclick="openImage(this.src)">` : '';
             let typeHtml = data.type ? `<div class="popup-info-row"><span class="info-label">Type:</span><span class="info-value">${data.type}</span></div>` : '';
             let addrHtml = data.address ? `<div class="popup-info-row"><span class="info-label">Address:</span><span class="info-value">${data.address}</span></div>` : '';
-            
-            return `
-                <div class="popup-container">
-                    ${imgHtml}
-                    <span class="popup-title">${data.name}</span>
-                    ${typeHtml}
-                    ${addrHtml}
-                </div>
-            `;
+            return `<div class="popup-container">${imgHtml}<span class="popup-title">${data.name}</span>${typeHtml}${addrHtml}</div>`;
         }
 
         window.onload = function() {
@@ -202,7 +173,6 @@
             L.imageOverlay(`${iconFolder}map.jpg`, bounds).addTo(map);
             map.fitBounds(bounds);
 
-            // Groups Initialization
             policeGroup = L.layerGroup().addTo(map);
             gangGroup = L.layerGroup().addTo(map);
             assetGroup = L.layerGroup().addTo(map);
@@ -219,55 +189,51 @@
 
             const mapData = {
                 gangs: [
-                    { x: 1265.72, y: -909.34, name: "RTM", type: "Criminal Organization", address: "Mirror Park", color: "#5e0207", radius: 100, img: "rtm.jpg" },
-                    { x: -353.16, y: -395.60, name: "Team Locos", type: "Criminal Organization", address: "Richman Hotel", color: "#5e0207", radius: 100, img: "locos.jpg" },
-                    { x: 642.75, y: -1320.00, name: "MOB", type: "Criminal Organization", address: "...", color: "#5e0207", radius: 100 },
-                    { x: 962.52, y: -1975.40, name: "Ultimate Outlaws", type: "Criminal Organization", address: "...", color: "#5e0207", img: "outlaws.jpg", radius: 100 },
-                    { x: -94.22, y: -1332.91, name: "VTS", type: "Criminal Organization", address: "...", img: "vts.jpg", color: "#5e0207", radius: 100 },
-                    { x: 1017.17, y: -683.77, name: "WSR", type: "Criminal Organization", address: "...", color: "#5e0207", radius: 100 },
-		    { x: 706.25, y: -1499.75, name: "Summerhouse", type: "Criminal Organization", address: "Addr", color: "#5e0207", img: "summerhouse.jpg", radius: 100 },
-		    { x: 581.00, y: -528.75, name: "Vatos Locos", type: "Criminal Organization", address: "Vinewood Blvd", color: "#5e0207", img: "vl.jpg", radius: 100 },
-		    { x: -216.37, y: -1517.10, name: "ATH", type: "Criminal Organization", address: "Goma St.", color: "#5e0207", img: "ath.jpg", radius: 100 },
-		    { x: 631.00, y: -687.50, name: "17N", type: "Criminal Organization", address: "Hawick", color: "#5e0207", img: "17.jpg", radius: 100 },
-		    { x: -207.39, y: -1206.82, name: "MS-13", type: "Criminal Organization", address: "Vespucci Canals", color: "#5e0207", img: "ms.jpg", radius:100 },
+                    
                 ],
                 services: [
-                    { x: 937.27, y: -1345.27, name: "La Mesa PD", type: "Police Station", address: "Popular St.", icon: icons.police, color: "#4facfe" },
-                    { x: 1136.32, y: -1460.88, name: "EMS", type: "Medical Center", address: "Strawberry Ave", icon: icons.hospital, color: "#ff4b4b" },
-                    { x: 578.32, y: -813.88, name: "DoJ", type: "Justice Dept", address: "San Andreas Ave", icon: icons.doj, color: "#ffffff" },
-                    { x: 111.11, y: -683.29, name: "City Hall", type: "Public Service", address: "Alta", icon: icons.city, color: "#ffffff" }
+                    { x: 710.50, y: -1161.50, name: "MRPD", type: "Police Station", address: "Mission Row", icon: icons.police, color: "#4facfe", img: "mrpd.jpg" }
                 ],
                 jobs: [
-                    { x: -521.50, y: -1069.50, name: "Strokemasters", type: "Mechanic", address: "La Puerta", icon: icons.mec, color: "#ffffff", img: "strokemaster.jpg" },
-                    { x: -279.08, y: -1087.60, name: "Burgershot", type: "Restaurant", address: "Vespucci Canals", icon: icons.food, color: "#ffffff", img: "burgershot.jpg" },
-                    { x: 441.50, y: -1528.50, name: "Tacos", type: "Fast Food", address: "Rancho", icon: icons.food, color: "#ffffff", img: "tacos.jpg" },
-		    { x: 1108.06, y: -950.71, name: "Leapfrog", type: "Food", address: "Mirror Park Lake", icon: icons.food, color: "#ffffff", img: "leapfrog.jpg" },
-		    { x: 484.72, y: -393.15, name: "Greek Gyro King", type: "Food", address: "Vinewood Blvd", icon: icons.food, color: "#ffffff", img: "gyro.jpg" },
-		    { x: 739.00, y: -1382.75, name: "2 Brothers Workshop", type: "Mechanic", address: "Little Bighorn", icon: icons.mec, color: "#ffffff", img: "brothers.jpg" },
-		    { x: 78.50, y: -1240.00, name: "Los Santos Custom", type: "Mechanic", address: "Calais Avenue", icon: icons.mec, color: "#ffffff", img: "ls.jpg" },
-		    { x: 443.75, y: -1234.25, name: "Red Dot", type: "Gunshop", address: "Adam's Apple Blvd", icon: icons.gun, color: "#ffffff", img: "reddot.jpg" },
-  		    { x: -664.64, y: -1286.09, name: "Pearls", type: "Food", address: "Luna Park", icon: icons.food, color: "#ffffff", img: "pearls.jpg" },
-		    { x: 223.50, y: -396.25, name: "Roster's Rest", type: "Food", address: "Eclipse Blvd", icon: icons.food, color: "#ffffff", img: "roster.jpg" },
-		    { x: -1415.27, y: -309.71, name: "Saltlab Mechanic", type: "Mechanic", address: "Ineseno Road", icon: icons.mec, color: "#ffffff", img: "saltmec.jpg" },
-		    { x: -1407.14, y: -291.68, name: "Saltlab Cafe", type: "Food", address: "Ineseno Road", icon: icons.food, color: "#ffffff", img: "saltfood.jpg" },
-		    { x: 1020.97, y: -1178.65, name: "Big Tuna", type: "Mechanic", address: "Vespucci Blvd", icon: icons.mec, color: "#ffffff", img: "bigtuna.jpg" },
-		    
+                    { x: 1368.00, y: 1729.00, name: "Marina Restaurant", type: "Food", address: "Sandy Shores", icon: icons.food, color: "#ffffff", img: "marina.jpg" },
+                    { x: -421.50, y: -1315.75, name: "Vista", type: "Bar", address: "Vespucci Beach", icon: icons.bar, color: "#ffffff", img: "vista.jpg" },
+                    { x: -484.00, y: -1111.75, name: "Pizza This", type: "Food", address: "Vespucci/Luna Park", icon: icons.food, color: "#ffffff", img: "pizzathis.jpg" },
+                    { x: 513.45, y: -1346.34, name: "Vanilla Unicorn", type: "Strip Club", address: "Strawberry", icon: icons.strip, color: "#ffffff", img: "vanilla.jpg" },
+                    { x: -240.50, y: -1429.75, name: "Back Side Skate Boards", type: "Skate Shop", address: "Bay City Avenue", icon: icons.skate, color: "#ffffff", img: "skates.jpg" },
+                    { x: 779.98, y: 1096.16, name: "Animal Ark", type: "Petshop", address: "Route 68", icon: icons.pet, color: "#ffffff", img: "animal.jpg" },
+                    { x: 876.50, y: -1150.75, name: "Darnell Bros", type: "Tailor", address: "Popular Str.", icon: icons.tailor, color: "#ffffff", img: "darnelbros.jpg" },
+                    { x: 1467.50, y: 1717.00, name: "Ammunation Sandy", type: "Ammunation", address: "Algonquin Blvd", icon: icons.gun, color: "#ffffff", img: "ammusandy.jpg" },
+                    { x: 244.50, y: 3103.75, name: "Ammunation Paleto", type: "Ammunation", address: "Great Ocean Hwy", icon: icons.gun, color: "#ffffff", img: "ammupaleto.jpg" },
+                    { x: 218.25, y: 3082.00, name: "Horny's", type: "Food", address: "Great Ocean Hwy", icon: icons.food, color: "#ffffff", img: "hornys.jpg" },
+                    { x: 1234.50, y: -1554.75, name: "Blazing Tattoo", type: "Tattoo Shop", address: "Innocence Blvd", icon: icons.tattoo, color: "#ffffff", img: "blazingtattoo.jpg" },
+                    { x: 136.12, y: -393.72, name: "SmoKing", type: "Smokes Store", address: "Eclipse Blvd", icon: icons.smoke, color: "#ffffff", img: "smoking.jpg" },
+                    { x: -251.25, y: -1412.00, name: "LD Organics", type: "Shop", address: "Bay City Ave", icon: icons.weed, color: "#ffffff", img: "ldorganics.jpg" },
+                    { x: -56.50, y: -1226.75, name: "O'Deas", type: "Pharmacy", address: "S Rockford Drive", icon: icons.pill, color: "#ffffff", img: "odeas.jpg" },
+                    { x: 495.50, y: -689.00, name: "Dollar Pills", type: "Pharmacy", address: "Hawick Avenue", icon: icons.pill, color: "#ffffff", img: "dollarpill.jpg" },
+                    { x: 986.76, y: -1863.34, name: "Memory Lanes", type: "Food", address: "Orchavadille", icon: icons.food, color: "#ffffff", img: "memorylanes.jpg" },
+                    { x: 1125.00, y: -1085.00, name: "Burgershot", type: "Food", address: "San Andreas Ave & El Rancho Blvd", icon: icons.food, color: "#ffffff", img: "burgershot.jpg" },
+                    { x: 517.50, y: -1442.50, name: "Lucky Plucker", type: "Food", address: "Strawberry Ave", icon: icons.food, color: "#ffffff", img: "lucky.jpg" },
+                    { x: -75.50, y: -1248.00, name: "Wigwam", type: "Food", address: "Palomino Ave", icon: icons.food, color: "#ffffff", img: "wigwam.jpg" },
+                    { x: 647.29, y: -1064.27, name: "The Last Light Pub", type: "Bar", address: "San Andreas Ave", icon: icons.bar, color: "#ffffff", img: "lastlight.jpg" },
+                    { x: -111.25, y: -2061.25, name: "Sightings Restaurant", type: "Food", address: "Los Santos International Airport", icon: icons.food, color: "#ffffff", img: "sightings.jpg" },
+                    { x: 43.49, y: -1086.82, name: "Digital Den Little Seoul", type: "Tech Store", address: "Palomino Ave, Little Seoul", icon: icons.tech, color: "#ffffff", img: "digitalseoul.jpg" },
+                    { x: 528.78, y: -415.20, name: "Digital Den Vinewood", type: "Tech Store", address: "Vinewood Blvd", icon: icons.tech, color: "#ffffff", img: "digitalvinewood.jpg" },
+                    { x: -256.00, y: -680.50, name: "Nocturnal", type: "Food/Bar", address: "Dorset Drive & Boulevard Del Perro", icon: icons.bar, color: "#ffffff", img: "nocturnal.jpg" },
+                    { x: -1432.73, y: -240.24, name: "Oasis", type: "Beach Bar", address: "Great Ocean Hwy, Pacific Bluffs", icon: icons.bar, color: "#ffffff", img: "oasis.jpg" },
+                    { x: 667.00, y: -410.00, name: "The Palace", type: "Night Club", address: "Power Str.", icon: icons.strip, color: "#ffffff", img: "thepalace.jpg" },
+                    { x: 1123.50, y: -767.00, name: "Pawnshop Mirror Park", type: "Pawnshop", address: "E Mirror Drive", icon: icons.pawn, color: "#ffffff", img: "pawnmirror.jpg" },
+                    { x: -437.40, y: -804.54, name: "Pawnshop Del Perro", type: "Pawnshop", address: "Boulevard Del Perro", icon: icons.pawn, color: "#ffffff", img: "pawndelperro.jpg" },
+                    { x: 1127.73, y: -1028.37, name: "Hayes", type: "Mechanic", address: "W Mirror Drive", icon: icons.mec, color: "#ffffff", img: "hayes.jpg" },
+                    { x: -536.69, y: -1062.07, name: "Strokemasters", type: "Mechanic", address: "Magelan Avenue, Luna Park", icon: icons.mec, color: "#ffffff", img: "strokemaster.jpg" },
+                    { x: 1014.00, y: -1969.25, name: "Helmut's", type: "Mechanic", address: "Orchavadille Avenue", icon: icons.mec, color: "#ffffff", img: "helmuts.jpg" },
+                    { x: 491.50, y: 3392.00, name: "Harmony Garage", type: "Mechanic", address: "Great Ocean Hwy, Paleto", icon: icons.mec, color: "#ffffff", img: "harmony.jpg" },
+                    { x: 1470.50, y: 1666.25, name: "Seaton Sand's", type: "Mechanic", address: "Zacunto Ave, Sandy Shores", icon: icons.mec, color: "#ffffff", img: "seaton.jpg" },
+                    { x: 223.50, y: -634.50, name: "Los Santos Customs", type: "Mechanic", address: "Eastbourne Way & Carcer Way", icon: icons.mec, color: "#ffffff", img: "ls.jpg" },
+                    { x: 765.95, y: -660.36, name: "Auto's", type: "Mechanic", address: "Elgin Avenue", icon: icons.mec, color: "#ffffff", img: "auto.jpg" }
                 ],
-                assets: [
-                    { x: 469.87, y: 3383.51, name: "High Pistols Craft", type: "Illegal Craft", address: "Paleto Bay", color: "#ffffff", img: "pistol3.jpg" },
-                    { x: 2150.36, y: 2125.67, name: "Medium Pistol Craft", type: "Illegal Craft", address: "Grapeseed", color: "#ffffff", img: "pistol2.jpg" },
-                    { x: 880.44, y: -1382.84, name: "Low Pistols Craft", type: "Illegal Craft", address: "La Mesa", color: "#ffffff", img: "pistol1.jpg" },
-                    { x: 1357.00, y: 3259.50, name: "Boosting", type: "Illegal Activity", address: "Mount Chiliad", color: "#ffffff", img: "boosting.jpg" },
-                    { x: 2004.00, y: 1125.00, name: "High SMG Craft", type: "Illegal Craft", address: "Grapeseed", color: "#ffffff", img: "smg2.jpg" },
-                    { x: 416.82, y: -2098.13, name: "Low SMG Craft", type: "Illegal Craft", address: "Davis", color: "#ffffff", img: "smg.jpg" },
-                    { x: -622.75, y: -2320.00, name: "House Robberies", type: "Illegal Activity", address: "Elysian Island", color: "#ffffff", img: "house.jpg" },
-                    { x: 727.13, y: -1878.70, name: "Weed Run", type: "Illegal Activity", address: "Rancho", color: "#ffffff", img: "weed.jpg" },
-                    { x: 95.50, y: -1565.00, name: "Chop", type: "Illegal Activity", address: "Strawberry", color: "#ffffff", img: "chop.jpg" },
-                    { x: 523.84, y: -1286.52, name: "Roof Robberies", type: "Illegal Activity", address: "Downtown", color: "#ffffff", img: "roof.jpg" }
-                ]
+                assets: []
             };
 
-            // Data Rendering
             mapData.gangs.forEach(g => {
                 L.circle(gtaToMap(g.x, g.y), { color: g.color, fillColor: g.color, fillOpacity: 0.2, radius: g.radius }).addTo(gangGroup);
                 L.circleMarker(gtaToMap(g.x, g.y), { radius: 4, color: '#fff', fillColor: g.color, fillOpacity: 1 }).bindPopup(createInteractivePopup(g)).addTo(gangGroup);
@@ -285,17 +251,20 @@
                 const x = e.latlng.lng.toFixed(2), y = e.latlng.lat.toFixed(2);
                 L.popup().setLatLng(e.latlng).setContent(`
                     <div class="admin-popup-container">
-                        <strong style="color:#a1035a; font-size:16px;">🛠️ ADMIN PANEL</strong><br>
-                        <div style="margin-top:10px; font-size:11px; color:#ddd;">COORDS:</div>
+                        <strong style="color:#7D3DB7; font-size:14px; display:block; margin-bottom:8px;">🛠️ ADMIN PANEL</strong>
+                        <div class="admin-section-title">Current Coordinates</div>
                         <div class="admin-code">x: ${x}, y: ${y}</div>
-                        <div style="margin-top:10px; font-size:11px; color:#ddd;">SNIPPET:</div>
-                        <div class="admin-code">{ x: ${x}, y: ${y}, name: "Name", type: "Type", address: "Addr", color: "#ffffff", img: "photo.jpg" },</div>
+                        <div class="admin-section-title">Gang</div>
+                        <div class="admin-code">{x:${x}, y:${y}, name:"Name", type:"Gang", address:"Addr", color:"#fff", radius:100, img:"x.jpg"},</div>
+                        <div class="admin-section-title">Service / Job</div>
+                        <div class="admin-code">{x:${x}, y:${y}, name:"Name", type:"Type", address:"Addr", icon:icons.x, color:"#fff", img:"x.jpg"},</div>
+                        <div class="admin-section-title">Asset</div>
+                        <div class="admin-code">{x:${x}, y:${y}, name:"Name", type:"Asset", address:"Addr", color:"#fff", img:"x.jpg"},</div>
                     </div>
                 `).openOn(map);
             });
         };
 
-        // Utility Functions
         const gtaToMap = (x, y) => [y, x];
         function handleCategoryClick(e, id) { if (e.target.tagName !== 'INPUT' && !e.target.classList.contains('slider')) toggleMenu(id); }
         function toggleMenu(id) { document.getElementById(id).classList.toggle('active'); }
