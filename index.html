@@ -22,6 +22,15 @@
         /* Map Fixes */
         .leaflet-image-layer { object-fit: contain !important; image-rendering: -webkit-optimize-contrast; }
 
+        /* Search Input */
+        .search-container { padding: 12px 15px; border-bottom: 1px solid #222; background: #080808; }
+        #search-input {
+            width: 100%; box-sizing: border-box; background: #141414; border: 1px solid #333;
+            color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 13px; outline: none;
+            transition: border-color 0.2s;
+        }
+        #search-input:focus { border-color: #7D3DB7; }
+
         /* Popups Styling */
         .popup-container { color: #fff; text-align: center; width: 220px; }
         .popup-img { 
@@ -45,7 +54,7 @@
         #lightbox img { max-width: 85%; max-height: 85%; border: 2px solid #7D3DB7; border-radius: 5px; box-shadow: 0 0 30px rgba(125, 61, 183, 0.5); }
 
         /* Admin Panel Styling - NO SCROLL & WIDER */
-        .admin-popup-container { width: 310px; }
+        .admin-popup-container { width: 380px; }
         .admin-section-title { color: #7D3DB7; font-size: 10px; font-weight: bold; margin-top: 8px; text-transform: uppercase; border-left: 2px solid #7D3DB7; padding-left: 5px; }
         .admin-code { 
             background: #111; border: 1px solid #333; padding: 8px; margin: 4px 0; 
@@ -72,13 +81,13 @@
         .count-badge { background: #7D3DB7; color: #ffffff; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
         .category-content { display: none; background: #0f0f0f; }
         .category-content.active { display: block; }
-        .nav-item { padding: 12px 20px; font-size: 14px; color: #b0b0b0; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; border-left: 3px solid transparent; }
+        .nav-item { padding: 10px 20px; font-size: 13px; color: #b0b0b0; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; border-left: 3px solid transparent; }
         .nav-item:hover { background: #1a1a1a; color: #fff; border-left: 3px solid #7D3DB7; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         
-        .leaflet-popup-content-wrapper { background: #000000 !important; color: #ffffff !important; border: 1px solid #7D3DB7; border-radius: 8px; }
+        .leaflet-popup-content-wrapper { background: #000000 !important; color: #ffffff !important; border: 1px solid #7D3DB7; border-radius: 8px; width: auto !important; }
         .leaflet-popup-tip { background: #7D3DB7 !important; }
-        #sidebar-coords { margin-top: auto; padding: 15px; background: #161616; border-top: 1px solid #222; font-family: monospace; color: #888; font-size: 12px; }
+        #sidebar-footer { margin-top: auto; padding: 15px; background: #161616; border-top: 1px solid #222; font-family: monospace; color: #aaa; font-size: 12px; text-align: center; }
     </style>
 </head>
 <body>
@@ -90,6 +99,10 @@
             <div class="sidebar-header">
                 <h2>2k25 Purple</h2>
                 <button id="close-sidebar" onclick="toggleSidebar()">❮</button>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="🔍 Αναζήτηση..." onkeyup="filterSidebar()">
             </div>
 
             <div class="menu-category">
@@ -136,7 +149,7 @@
                 <div id="asset-menu" class="category-content"></div>
             </div>
             
-            <div id="sidebar-coords">📍 X: <span id="coord-x">0</span> | Y: <span id="coord-y">0</span></div>
+            <div id="sidebar-footer">Updated: 28 October</div>
         </div>
 
         <button id="open-sidebar" onclick="toggleSidebar()">❯</button>
@@ -162,7 +175,7 @@
         }
 
         function createInteractivePopup(data) {
-            let imgHtml = data.img ? `<img src="${imgFolder}${data.img}" class="popup-img" onclick="openImage(this.src)">` : '';
+            let imgHtml = data.img ? `<img src="${imgFolder}${data.img}" class="popup-img" onclick="openImage(this.src)" title="Click to enlarge">` : '';
             let typeHtml = data.type ? `<div class="popup-info-row"><span class="info-label">Type:</span><span class="info-value">${data.type}</span></div>` : '';
             let addrHtml = data.address ? `<div class="popup-info-row"><span class="info-label">Address:</span><span class="info-value">${data.address}</span></div>` : '';
             return `<div class="popup-container">${imgHtml}<span class="popup-title">${data.name}</span>${typeHtml}${addrHtml}</div>`;
@@ -218,14 +231,12 @@
                     {x:1265.41, y:-899.90, name:"Mexicans", type:"Gang", address:"Nikola Place Mirror Park", color:"#B00707", radius:100, img:"x.jpg"},
                     {x:-2048.62, y:413.66, name:"Hasienda Napoles", type:"Island", address:"Great Ocean Highway", color:"#fff", radius:300, img:"hasienda.jpg"},
                     {x:2998.13, y:-2998.13, name:"Cayo Perico", type:"Island", address:"Cayo Perico", color:"#fff", radius:300, img:"cayo.jpg"},
-                    {x:3145.66, y:2246.44, name:"Darkwood", type:"Island", address:"Catfish", color:"#fff", radius:200, img:"darkwood.jpg"},
-                    
-                    
+                    {x:3145.66, y:2246.44, name:"Darkwood", type:"Island", address:"Catfish", color:"#fff", radius:200, img:"darkwood.jpg"}
                 ],
                 services: [
                     { x: 710.50, y: -1161.50, name: "MRPD", type: "Police Station", address: "Mission Row", icon: icons.police, color: "#4facfe", img: "mrpd.jpg" },
                     { x:472.73, y:-818.34, name:"EMS", type:"Medical Station", address:"Alta St", icon:icons.hospital, color:"#fff", img:"ems.jpg"},
-                    {x:107.11, y:-943.06, name:"DoJ/Cityhall", type:"Government Facilities", address:"San Andreas Avenue", icon:icons.doj, color:"#fff", img:"cityhall.jpg"},
+                    { x:107.11, y:-943.06, name:"DoJ/Cityhall", type:"Government Facilities", address:"San Andreas Avenue", icon:icons.doj, color:"#fff", img:"cityhall.jpg"}
                 ],
                 jobs: [
                     { x: 1368.00, y: 1729.00, name: "Marina Restaurant", type: "Food", address: "Sandy Shores", icon: icons.food, color: "#ffffff", img: "marina.jpg" },
@@ -263,24 +274,38 @@
                     { x: 1470.50, y: 1666.25, name: "Seaton Sand's", type: "Mechanic", address: "Zacunto Ave, Sandy Shores", icon: icons.mec, color: "#ffffff", img: "seaton.jpg" },
                     { x: 223.50, y: -634.50, name: "Los Santos Customs", type: "Mechanic", address: "Eastbourne Way & Carcer Way", icon: icons.mec, color: "#ffffff", img: "ls.jpg" },
                     { x: 765.95, y: -660.36, name: "Auto's", type: "Mechanic", address: "Elgin Avenue", icon: icons.mec, color: "#ffffff", img: "auto.jpg" },
-                    { x:294.05, y:-1363.39, name:"Benny's", type:"Mechanic", address:"Alta St.", icon:icons.mec, color:"#fffff", img:"x.jpg"},
-                    { x:1031.05, y:-643.60, name:"Road Hunters", type:"Mechanic", address:"Mirror Park Blvd", icon:icons.mec, color:"#fffff", img:"x.jpg"},
+                    { x:294.05, y:-1363.39, name:"Benny's", type:"Mechanic", address:"Alta St.", icon:icons.mec, color:"#ffffff", img:"x.jpg"},
+                    { x:1031.05, y:-643.60, name:"Road Hunters", type:"Mechanic", address:"Mirror Park Blvd", icon:icons.mec, color:"#ffffff", img:"x.jpg"}
                 ],
-                assets: []
+                assets: [{x:376.73, y:-565.71, name:"Weed Processing", type:"Asset", address:"Las Lagunas", color:"#fff", img:"x.jpg"},
+                        ]
             };
 
             mapData.gangs.forEach(g => {
                 L.circle(gtaToMap(g.x, g.y), { color: g.color, fillColor: g.color, fillOpacity: 0.2, radius: g.radius }).addTo(gangGroup);
-                L.circleMarker(gtaToMap(g.x, g.y), { radius: 4, color: '#fff', fillColor: g.color, fillOpacity: 1 }).bindPopup(createInteractivePopup(g)).addTo(gangGroup);
-                addNavItem('criminal-menu', g);
+                const marker = L.circleMarker(gtaToMap(g.x, g.y), { radius: 4, color: '#fff', fillColor: g.color, fillOpacity: 1 }).bindPopup(createInteractivePopup(g)).addTo(gangGroup);
+                addNavItem('criminal-menu', g, marker);
             });
-            mapData.services.forEach(s => { L.marker(gtaToMap(s.x, s.y), {icon: s.icon}).bindPopup(createInteractivePopup(s)).addTo(policeGroup); addNavItem('service-menu', s); });
-            mapData.jobs.forEach(j => { L.marker(gtaToMap(j.x, j.y), {icon: j.icon}).bindPopup(createInteractivePopup(j)).addTo(jobGroup); addNavItem('job-menu', j); });
-            mapData.assets.forEach(a => { L.marker(gtaToMap(a.x, a.y)).bindPopup(createInteractivePopup(a)).addTo(assetGroup); addNavItem('asset-menu', a); });
+            mapData.services.forEach(s => { 
+                const marker = L.marker(gtaToMap(s.x, s.y), {icon: s.icon}).bindPopup(createInteractivePopup(s)).addTo(policeGroup); 
+                addNavItem('service-menu', s, marker); 
+            });
+            mapData.jobs.forEach(j => { 
+                const marker = L.marker(gtaToMap(j.x, j.y), {icon: j.icon}).bindPopup(createInteractivePopup(j)).addTo(jobGroup); 
+                addNavItem('job-menu', j, marker); 
+            });
+            mapData.assets.forEach(a => { 
+                const marker = L.circleMarker(gtaToMap(a.x, a.y), {
+                    radius: 6,
+                    color: '#ffffff',
+                    fillColor: a.color || '#7D3DB7',
+                    fillOpacity: 1,
+                    weight: 2
+                }).bindPopup(createInteractivePopup(a)).addTo(assetGroup); 
+                addNavItem('asset-menu', a, marker); 
+            });
 
             updateCounts(mapData);
-
-            map.on('mousemove', (e) => { document.getElementById('coord-x').innerText = e.latlng.lng.toFixed(0); document.getElementById('coord-y').innerText = e.latlng.lat.toFixed(0); });
 
             map.on('contextmenu', (e) => {
                 const x = e.latlng.lng.toFixed(2), y = e.latlng.lat.toFixed(2);
@@ -304,23 +329,62 @@
         function handleCategoryClick(e, id) { if (e.target.tagName !== 'INPUT' && !e.target.classList.contains('slider')) toggleMenu(id); }
         function toggleMenu(id) { document.getElementById(id).classList.toggle('active'); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); setTimeout(() => { if(map) { map.invalidateSize(); map.fitBounds(bounds); } }, 400); }
-        function goToLoc(x, y) { if(map) map.flyTo(gtaToMap(x, y), 1); }
+        
+        function goToLocAndOpen(x, y, marker) { 
+            if(map) {
+                map.flyTo(gtaToMap(x, y), 1);
+                if(marker) {
+                    setTimeout(() => { marker.openPopup(); }, 350);
+                }
+            } 
+        }
+
         function updateCounts(data) {
             document.getElementById('gang-count').innerText = data.gangs.length;
             document.getElementById('service-count').innerText = data.services.length;
             document.getElementById('job-count').innerText = data.jobs.length;
             document.getElementById('asset-count').innerText = data.assets.length;
         }
+
         function toggleLayer(id, type) {
             const groups = { gang: gangGroup, police: policeGroup, job: jobGroup, asset: assetGroup };
             document.getElementById(id).checked ? map.addLayer(groups[type]) : map.removeLayer(groups[type]);
         }
-        function addNavItem(id, data) {
+
+        function addNavItem(id, data, marker) {
             const item = document.createElement('div');
             item.className = 'nav-item';
+            item.setAttribute('data-name', data.name.toLowerCase());
             item.innerHTML = `<span class="dot" style="background:${data.color}; box-shadow:0 0 8px ${data.color}"></span> ${data.name}`;
-            item.onclick = () => goToLoc(data.x, data.y);
+            item.onclick = () => goToLocAndOpen(data.x, data.y, marker);
             document.getElementById(id).appendChild(item);
+        }
+
+        function filterSidebar() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const menus = ['criminal-menu', 'service-menu', 'job-menu', 'asset-menu'];
+
+            menus.forEach(menuId => {
+                const menu = document.getElementById(menuId);
+                const items = menu.getElementsByClassName('nav-item');
+                let hasVisible = false;
+
+                for (let item of items) {
+                    const name = item.getAttribute('data-name');
+                    if (name.includes(query)) {
+                        item.style.display = 'flex';
+                        hasVisible = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+
+                if (query.length > 0) {
+                    if (hasVisible) {
+                        menu.classList.add('active');
+                    }
+                }
+            });
         }
     </script>
 </body>
