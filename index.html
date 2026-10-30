@@ -78,21 +78,31 @@
         ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 9px; }
         ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
 
+        @page {
+            size: auto;
+            margin: 0mm; /* Removes default browser print headers, URLs, date, and page numbers */
+        }
+
         @media print {
-            body * { visibility: hidden; }
-            #pdfExportContainer, #pdfExportContainer * { visibility: visible; }
-            #pdfExportContainer { position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; color: #000 !important; padding: 20px; }
+            html, body { background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
+            body * { visibility: hidden !important; }
+            #pdfExportContainer, #pdfExportContainer * { visibility: visible !important; }
+            #pdfExportContainer { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; min-height: 100% !important; background: #fff !important; color: #000 !important; padding: 15mm !important; box-shadow: none !important; box-sizing: border-box !important; }
             .no-print { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-<div id="app" class="flex h-screen overflow-hidden relative">
+<div id="app" class="flex h-screen overflow-hidden relative transition-all duration-300" :class="isMobileView ? 'max-w-[430px] mx-auto border-x border-slate-800 shadow-2xl my-0 relative' : ''">
+
+    <!-- MOBILE OVERLAY BACKDROP -->
+    <div v-if="isMobileView && mobileMenuOpen" @click="mobileMenuOpen = false" class="fixed inset-0 bg-black/80 z-30"></div>
 
     <!-- SIDEBAR NAVIGATION -->
-    <aside class="w-64 bg-panel border-r border-slate-800 flex flex-col shrink-0 z-20">
-        <div class="p-4 border-b border-slate-800 flex items-center space-x-3 cursor-pointer" @click="go('welcome')">
+    <aside class="bg-panel border-r border-slate-800 flex flex-col shrink-0 z-40 transition-all duration-300" 
+           :class="isMobileView ? (mobileMenuOpen ? 'fixed inset-y-0 left-0 w-64 shadow-2xl' : 'hidden') : 'w-64'">
+        <div class="p-4 border-b border-slate-800 flex items-center space-x-3 cursor-pointer" @click="go('welcome'); mobileMenuOpen=false">
             <div class="w-12 h-12 rounded-2xl bg-bg border border-tc/40 flex items-center justify-center text-tc shadow-md shrink-0 overflow-hidden p-1">
                 <img src="images/CID Logo.png" onerror="this.onerror=null; this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden');" class="w-full h-full object-contain">
                 <i class="fa-solid fa-shield-halved text-xl hidden"></i>
@@ -105,37 +115,37 @@
 
         <nav class="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
             <div class="text-[9px] font-mono text-slate-500 uppercase px-3 py-1">Public Services</div>
-            <button @click="go('welcome')" :class="nav('welcome')"><i class="fa-solid fa-house w-5 text-sky-400"></i>Terminal Home</button>
-            <button @click="go('map')" :class="nav('map')"><i class="fa-solid fa-map-location-dot w-5 text-tc"></i>Tactical Map</button>
-            <button @click="go('warrants')" :class="nav('warrants')"><i class="fa-solid fa-triangle-exclamation w-5 text-red-400"></i>Request Warrants</button>
-            <button @click="go('penal')" :class="nav('penal')"><i class="fa-solid fa-gavel w-5 text-amber-400"></i>Penal Code</button>
+            <button @click="go('welcome'); mobileMenuOpen=false" :class="nav('welcome')"><i class="fa-solid fa-house w-5 text-sky-400"></i>Terminal Home</button>
+            <button @click="go('map'); mobileMenuOpen=false" :class="nav('map')"><i class="fa-solid fa-map-location-dot w-5 text-tc"></i>Tactical Map</button>
+            <button @click="go('warrants'); mobileMenuOpen=false" :class="nav('warrants')"><i class="fa-solid fa-triangle-exclamation w-5 text-red-400"></i>Request Warrants</button>
+            <button @click="go('penal'); mobileMenuOpen=false" :class="nav('penal')"><i class="fa-solid fa-gavel w-5 text-amber-400"></i>Penal Code</button>
 
             <template v-if="user">
                 <div class="text-[9px] font-mono text-tc uppercase px-3 pt-4 mt-2 border-t border-slate-800">
                     <i class="fa-solid fa-lock text-[8px] mr-1"></i>Agent Operations
                 </div>
                 
-                <button v-for="(c, k) in db.collections" :key="k" v-show="k!=='warrants'&&level(k)!=='none'" @click="go(k)" :class="nav(k)">
+                <button v-for="(c, k) in db.collections" :key="k" v-show="k!=='warrants'&&level(k)!=='none'" @click="go(k); mobileMenuOpen=false" :class="nav(k)">
                     <i :class="c.icon" class="w-5"></i><span>{{ c.label }}</span>
                 </button>
 
-                <button v-if="level('documents') !== 'none'" @click="go('documents')" :class="nav('documents')">
+                <button v-if="level('documents') !== 'none'" @click="go('documents'); mobileMenuOpen=false" :class="nav('documents')">
                     <i class="fa-solid fa-file-pdf text-red-400 w-5"></i><span>Document Vault</span>
                 </button>
 
-                <button v-if="level('reports') !== 'none'" @click="go('reports')" :class="nav('reports')">
+                <button v-if="level('reports') !== 'none'" @click="go('reports'); mobileMenuOpen=false" :class="nav('reports')">
                     <i class="fa-solid fa-file-signature text-emerald-400 w-5"></i><span>MDT Incident Reports</span>
                 </button>
 
-                <button @click="go('photo_evidence')" :class="nav('photo_evidence')">
+                <button @click="go('photo_evidence'); mobileMenuOpen=false" :class="nav('photo_evidence')">
                     <i class="fa-solid fa-images text-amber-300 w-5"></i><span>Master Photo Evidence</span>
                 </button>
 
-                <button v-if="level('matcher')!=='none'" @click="go('matcher')" :class="nav('matcher')">
+                <button v-if="level('matcher')!=='none'" @click="go('matcher'); mobileMenuOpen=false" :class="nav('matcher')">
                     <i class="fa-solid fa-wand-magic-sparkles text-purple-400 w-5"></i><span>Face / Outfit Matcher</span>
                 </button>
 
-                <button v-if="isAdmin" @click="go('admin')" :class="nav('admin')" class="text-red-400 font-bold">
+                <button v-if="isAdmin" @click="go('admin'); mobileMenuOpen=false" :class="nav('admin')" class="text-red-400 font-bold">
                     <i class="fa-solid fa-user-gear w-5"></i><span>Admin Panel</span>
                 </button>
             </template>
@@ -154,25 +164,36 @@
                     <span v-if="firebaseConnected" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50" title="Firebase Live Connected"></span>
                     <span v-else class="w-2.5 h-2.5 rounded-full bg-amber-500/80" title="Local Offline Mode"></span>
                 </div>
-                <button @click="logout" class="w-full py-1.5 bg-slate-800 hover:bg-red-600/80 text-slate-300 hover:text-white rounded-xl text-xs font-mono border border-slate-700 transition">Sign Out</button>
+                <div class="flex items-center gap-1.5">
+                    <button @click="logout" class="flex-1 py-1.5 bg-slate-800 hover:bg-red-600/80 text-slate-300 hover:text-white rounded-xl text-xs font-mono border border-slate-700 transition">Sign Out</button>
+                    <button @click="isMobileView = !isMobileView" class="p-1.5 bg-slate-800 hover:bg-tc/20 text-slate-400 hover:text-tc rounded-xl border border-slate-700 transition" title="Toggle Mobile View">
+                        <i :class="isMobileView ? 'fa-solid fa-desktop text-xs' : 'fa-solid fa-mobile-screen-button text-xs'"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </aside>
 
     <!-- MAIN VIEWPORT -->
     <main class="flex-1 flex flex-col min-w-0 bg-bg">
-        <header class="h-14 bg-panel border-b border-slate-800 flex items-center justify-between px-6 shrink-0">
-            <div class="flex items-center space-x-3">
-                <img src="images/CID Logo.png" class="h-8 w-auto object-contain" onerror="this.style.display='none'">
-                <span class="text-xs font-title font-bold text-white tracking-widest uppercase">
-                    SAN ANDREAS STATE POLICE // CRIMINAL INVESTIGATION DIVISION
+        <header class="h-14 bg-panel border-b border-slate-800 flex items-center justify-between px-4 sm:px-6 shrink-0">
+            <div class="flex items-center space-x-2">
+                <button v-if="isMobileView" @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 text-slate-300 hover:text-white mr-1 text-base">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <img src="images/CID Logo.png" class="h-7 w-auto object-contain" onerror="this.style.display='none'">
+                <span class="text-[11px] sm:text-xs font-title font-bold text-white tracking-wider sm:tracking-widest uppercase truncate">
+                    S.A.S.P. // C.I.D.
                 </span>
             </div>
-            <div class="flex items-center space-x-3 text-xs font-mono text-slate-400">
-                <span class="text-tc uppercase tracking-wider text-[10px] px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 rounded-full font-bold">
+            <div class="flex items-center space-x-2 sm:space-x-3 text-xs font-mono text-slate-400">
+                <span class="text-tc uppercase tracking-wider text-[10px] px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 rounded-full font-bold hidden sm:inline-block">
                     UTC+2
                 </span>
-                <span>{{ date }} {{ time }}</span>
+                <span class="text-[11px]">{{ time }}</span>
+                <button @click="isMobileView = !isMobileView" class="text-slate-400 hover:text-tc text-xs p-1.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 rounded-lg transition" :title="isMobileView ? 'Switch to Desktop View' : 'Switch to Mobile View'">
+                    <i :class="isMobileView ? 'fa-solid fa-desktop' : 'fa-solid fa-mobile-screen-button'"></i>
+                </button>
             </div>
         </header>
 
@@ -1031,6 +1052,7 @@ const app = createApp({
     setup() {
         const db = reactive(loadDb());
         const user = ref(null), tab = ref('welcome'), atab = ref('accounts'), showLogin = ref(false);
+        const isMobileView = ref(false), mobileMenuOpen = ref(false);
         const loginError = ref(''), time = ref(''), date = ref(''), saveError = ref(''), q = ref('');
         const mapFilterQuery = ref('');
         const firebaseConnected = ref(false), firebaseConfigRaw = ref('');
@@ -1451,7 +1473,7 @@ const app = createApp({
         });
 
         return {
-            db, user, tab, atab, showLogin, loginErr: loginError, q, time, date, saveError, mapFilterQuery, mapLayers,
+            db, user, tab, atab, showLogin, isMobileView, mobileMenuOpen, loginErr: loginError, q, time, date, saveError, mapFilterQuery, mapLayers,
             firebaseConnected, firebaseConfigRaw, auth, na, nt, nr, nl, rec, recErr, gal, zoom, zs, pdfExportItem,
             caseCodeNum, newVideoUrl, showReportModal, newReportForm, showUploadDocModal, newDocForm, showPenalEditModal, penalForm,
             mImg, mUrl, mMode, mBusy, mStatus, mResults, RANKS, isTop, isAdmin, rankLevel, level, setPerm, permKeys,
